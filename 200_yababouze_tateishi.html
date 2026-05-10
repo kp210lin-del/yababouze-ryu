@@ -318,7 +318,7 @@ section strong {
 .var-intro { margin: 0; font-size: 14px; color: var(--text-dim); line-height: 1.7; }
 .var-intro:empty { display: none; }
 .var-stage {
-  display: grid; grid-template-columns: auto 1fr;
+  display: grid; grid-template-columns: auto minmax(0, 280px);
   gap: 16px; align-items: start;
 }
 @media (max-width: 720px) {
@@ -327,16 +327,28 @@ section strong {
 .var-board-wrap {
   display: flex; flex-direction: column; gap: 8px; align-items: center;
 }
+.var-board-wrap .mini-board-stack table.mini-board td {
+  width: 38px; height: 42px;
+}
+.var-board-wrap .mini-board-stack table.mini-board .piece-glyph {
+  font-size: 24px;
+}
+.var-board-wrap .mini-board-stack .mini-hand-piece {
+  font-size: 15px; padding: 3px 8px; border-radius: 6px;
+}
+.var-board-wrap .mini-board-stack .mini-hand {
+  min-height: 30px; padding: 4px 6px; gap: 5px;
+}
 .var-controls {
-  display: flex; align-items: center; gap: 6px; font-size: 12px;
+  display: flex; align-items: center; gap: 8px; font-size: 14px;
 }
 .var-controls button {
   background: rgba(255,255,255,0.04);
   color: var(--text);
   border: 1px solid var(--border); border-radius: 999px;
-  padding: 3px 9px; font-size: 12px; cursor: pointer;
+  padding: 12px 20px; font-size: 17px; cursor: pointer;
   font-family: inherit; transition: all 0.18s ease;
-  min-width: 28px;
+  min-width: 54px;
 }
 .var-controls button:hover:not(:disabled) {
   border-color: var(--pink); color: var(--text);
@@ -344,10 +356,10 @@ section strong {
 }
 .var-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
 .var-ply-indicator {
-  min-width: 78px; text-align: center;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  min-width: 100px; text-align: center;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
   color: var(--text-dim);
-  padding: 3px 8px; border-radius: 999px;
+  padding: 7px 14px; border-radius: 999px;
   background: rgba(168,85,247,0.10);
   border: 1px solid rgba(168,85,247,0.3);
 }
@@ -498,27 +510,27 @@ section strong {
   display: flex; flex-direction: column; gap: 10px; align-items: center;
 }
 .practical-games .game-board-wrap .mini-board-stack table.mini-board td {
-  width: 28px; height: 30px;
+  width: 38px; height: 42px;
 }
 .practical-games .game-board-wrap .mini-board-stack table.mini-board .piece-glyph {
-  font-size: 17px;
+  font-size: 24px;
 }
 .practical-games .game-board-wrap .mini-board-stack .mini-hand-piece {
-  font-size: 12px; padding: 2px 6px; border-radius: 5px;
+  font-size: 15px; padding: 3px 8px; border-radius: 6px;
 }
 .practical-games .game-board-wrap .mini-board-stack .mini-hand {
-  min-height: 26px; padding: 3px 5px; gap: 4px;
+  min-height: 30px; padding: 4px 6px; gap: 5px;
 }
 .practical-games .game-controls {
-  display: flex; align-items: center; gap: 6px; font-size: 12px;
+  display: flex; align-items: center; gap: 8px; font-size: 14px;
 }
 .practical-games .game-controls button {
   background: rgba(255,255,255,0.04);
   color: var(--text);
   border: 1px solid var(--border); border-radius: 999px;
-  padding: 4px 10px; font-size: 13px; cursor: pointer;
+  padding: 12px 20px; font-size: 17px; cursor: pointer;
   font-family: inherit; transition: all 0.18s ease;
-  min-width: 30px;
+  min-width: 54px;
 }
 .practical-games .game-controls button:hover:not(:disabled) {
   border-color: var(--pink); color: var(--text);
@@ -526,10 +538,10 @@ section strong {
 }
 .practical-games .game-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
 .practical-games .game-ply-indicator {
-  min-width: 88px; text-align: center;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  min-width: 108px; text-align: center;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
   color: var(--text-dim);
-  padding: 4px 9px; border-radius: 999px;
+  padding: 7px 14px; border-radius: 999px;
   background: rgba(168,85,247,0.10);
   border: 1px solid rgba(168,85,247,0.3);
 }
@@ -587,28 +599,28 @@ section strong {
 }
 /* enlarge mini board specifically inside mainline */
 .mainline-board-wrap .mini-board-stack table.mini-board td {
-  width: 30px; height: 32px;
+  width: 44px; height: 48px;
 }
 .mainline-board-wrap .mini-board-stack table.mini-board .piece-glyph {
-  font-size: 19px;
+  font-size: 27px;
 }
 .mainline-board-wrap .mini-board-stack .mini-hand-piece {
-  font-size: 13px; padding: 2px 7px; border-radius: 6px;
+  font-size: 17px; padding: 4px 10px; border-radius: 7px;
 }
 .mainline-board-wrap .mini-board-stack .mini-hand {
-  min-height: 28px; padding: 3px 6px; gap: 4px;
+  min-height: 34px; padding: 4px 7px; gap: 5px;
 }
 .mainline-controls {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px;
 }
 .mainline-controls button {
   background: rgba(255,255,255,0.04);
   color: var(--text);
   border: 1px solid var(--border); border-radius: 999px;
-  padding: 4px 12px; font-size: 14px; cursor: pointer;
+  padding: 13px 22px; font-size: 19px; cursor: pointer;
   font-family: inherit; transition: all 0.18s ease;
-  min-width: 32px;
+  min-width: 60px;
 }
 .mainline-controls button:hover:not(:disabled) {
   border-color: var(--pink); color: var(--text);
@@ -617,10 +629,10 @@ section strong {
 }
 .mainline-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
 .ml-ply-indicator {
-  min-width: 92px; text-align: center;
-  font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+  min-width: 116px; text-align: center;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
   color: var(--text-dim);
-  padding: 4px 10px; border-radius: 999px;
+  padding: 9px 16px; border-radius: 999px;
   background: rgba(168,85,247,0.10);
   border: 1px solid rgba(168,85,247,0.3);
 }
