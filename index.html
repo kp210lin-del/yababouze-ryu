@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>やばボーズ流とは — 入門</title>
+<style>
+:root {
+  --bg: #0b0f1a;
+  --bg-2: #11172a;
+  --surface: #161c2e;
+  --surface-hi: #1d2540;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(255, 255, 255, 0.16);
+  --text: #e7ecf6;
+  --text-dim: #9aa3b8;
+  --text-muted: #6b7390;
+  --pink: #ff3d8a;
+  --pink-soft: #ff7eb3;
+  --cyan: #22e2ff;
+  --purple: #a855f7;
+  --amber: #ffb84d;
+  --gradient-hero: linear-gradient(135deg, #ff3d8a 0%, #a855f7 50%, #22e2ff 100%);
+  --gradient-line: linear-gradient(90deg, #ff3d8a, #a855f7 60%, #22e2ff);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Inter", "SF Pro Display", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(168, 85, 247, 0.18), transparent 60%),
+    radial-gradient(1000px 500px at 110% 10%, rgba(34, 226, 255, 0.12), transparent 55%),
+    radial-gradient(900px 600px at 50% 110%, rgba(255, 61, 138, 0.12), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+#topbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 22px;
+  background: rgba(11, 15, 26, 0.7);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 10;
+}
+#topbar::after {
+  content: ""; position: absolute;
+  left: 0; right: 0; bottom: -1px; height: 1px;
+  background: var(--gradient-line); opacity: 0.6;
+}
+#topbar h1 {
+  margin: 0; font-size: 18px; font-weight: 800;
+  letter-spacing: 0.02em; white-space: nowrap;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+
+#edit-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: auto; flex-wrap: wrap; font-size: 12px;
+}
+.toggle-label {
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
+  color: var(--text-dim); padding: 4px 10px;
+  border: 1px solid var(--border); border-radius: 999px;
+}
+.toggle-label:has(input:checked) {
+  color: var(--text); border-color: var(--pink);
+  background: rgba(255, 61, 138, 0.08);
+}
+#edit-toolbar input[type="checkbox"] { accent-color: var(--pink); }
+#edit-toolbar button, #edit-toolbar .import-label {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
+  font-family: inherit; transition: all 0.18s ease;
+}
+#edit-toolbar button:hover:not(:disabled),
+#edit-toolbar .import-label:hover {
+  border-color: var(--border-hi); color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+}
+#edit-toolbar button.primary {
+  background: var(--gradient-hero); color: #0b0f1a;
+  border: 0; font-weight: 700; padding: 6px 14px;
+  box-shadow: 0 4px 18px rgba(255, 61, 138, 0.3);
+}
+#edit-toolbar button.primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 24px rgba(255, 61, 138, 0.45);
+}
+#edit-toolbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+#status-msg { font-size: 11px; color: var(--cyan); min-width: 80px; }
+
+main {
+  max-width: 920px; margin: 0 auto;
+  padding: 28px 20px 80px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+section {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005)), var(--surface);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 26px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 30px -16px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+section:hover { border-color: var(--border-hi); }
+section h2 {
+  margin: 0 0 14px; font-size: 18px; font-weight: 700;
+  color: var(--text); letter-spacing: 0.02em;
+  display: flex; align-items: center; gap: 12px;
+}
+section h2::before {
+  content: ""; width: 4px; height: 18px; border-radius: 2px;
+  background: var(--gradient-hero); flex-shrink: 0;
+}
+
+section.catch {
+  background:
+    radial-gradient(800px 200px at 50% 0%, rgba(255, 61, 138, 0.18), transparent 60%),
+    var(--surface);
+  border: 1px solid var(--border);
+  text-align: center; padding: 42px 22px 38px;
+}
+section.catch [data-editable-key="catch"] {
+  font-size: 28px; font-weight: 800; letter-spacing: 0.02em;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; line-height: 1.4;
+}
+section.catch .catch-placeholder {
+  margin: 0; background: none;
+  -webkit-text-fill-color: var(--text-muted);
+  color: var(--text-muted);
+  font-style: italic; font-weight: 500; font-size: 22px;
+}
+
+section.winning-image .board-and-caption {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 26px; align-items: center;
+}
+@media (max-width: 720px) {
+  section.winning-image .board-and-caption {
+    grid-template-columns: 1fr; justify-items: center;
+  }
+}
+.caption { font-size: 15px; color: var(--text-dim); line-height: 1.8; }
+
+#hand-board-stack {
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #2a3148, #1c2238);
+  border: 1px solid var(--border-hi); border-radius: 10px;
+  padding: 8px; width: max-content;
+  box-shadow: 0 18px 44px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(168, 85, 247, 0.1) inset;
+}
+#hand-board-stack.flipped { flex-direction: column-reverse; }
+.hand-row {
+  min-height: 28px; padding: 3px 6px;
+  display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+}
+.hand-piece {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px; padding: 2px 7px;
+  font-size: 13px; font-weight: 700; color: var(--text);
+}
+.hand-piece.rotated { transform: rotate(180deg); }
+.hand-empty { color: var(--text-muted); font-size: 10px; }
+
+#board-container { display: flex; flex-direction: column; gap: 3px; }
+.coord-row { display: flex; justify-content: space-around; padding: 0 2px; font-size: 10px; color: var(--text-muted); }
+.coord-col { display: flex; flex-direction: column; justify-content: space-around; padding: 2px 0; font-size: 10px; color: var(--text-muted); }
+#board-row { display: flex; align-items: stretch; gap: 2px; }
+#board-with-overlay { position: relative; }
+#board {
+  border-collapse: collapse;
+  background: linear-gradient(180deg, #f0d8a0, #e6c98a);
+  border: 1px solid #2b1f1a; border-radius: 4px; overflow: hidden;
+}
+#board td {
+  width: 30px; height: 32px;
+  border: 1px solid rgba(43, 31, 26, 0.45);
+  text-align: center; vertical-align: middle;
+  position: relative; padding: 0;
+}
+.piece-glyph {
+  font-size: 19px; font-weight: 800; color: #1a1310;
+  line-height: 1; display: inline-block;
+}
+#board td.promoted .piece-glyph { color: #b54040; }
+#board td.last-to {
+  background: linear-gradient(135deg, #ff3d8a, #a855f7);
+  box-shadow: inset 0 0 0 2px #ff3d8a, 0 0 14px rgba(255, 61, 138, 0.6);
+}
+#board td.last-to .piece-glyph {
+  color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+section ul { margin: 6px 0 0; padding-left: 22px; list-style: none; }
+section ul li {
+  position: relative; margin-bottom: 8px; padding-left: 18px;
+  color: var(--text-dim);
+}
+section ul li::before {
+  content: ""; position: absolute;
+  left: 0; top: 0.7em; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--gradient-hero);
+}
+section p { margin: 6px 0; color: var(--text-dim); }
+section strong {
+  color: var(--text);
+  background: linear-gradient(transparent 60%, rgba(255, 61, 138, 0.25) 60%);
+  padding: 0 2px; font-weight: 700;
+}
+
+.cls-tree {
+  padding: 4px 0;
+  --tree-line: rgba(34, 226, 255, 0.55);
+  --tree-line-soft: rgba(34, 226, 255, 0.28);
+  --tree-line-pink: rgba(255, 61, 138, 0.7);
+}
+.cls-branch { position: relative; }
+.cls-pill {
+  position: relative; display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border); color: var(--text);
+  font-size: 14px; font-weight: 700; letter-spacing: 0.03em;
+  z-index: 1;
+}
+.cls-pill::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 8px rgba(34, 226, 255, 0.55);
+  flex-shrink: 0;
+}
+.cls-pill-root {
+  font-size: 15px;
+  background: rgba(168, 85, 247, 0.10);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+.cls-pill-root::before {
+  background: var(--purple); box-shadow: 0 0 8px rgba(168, 85, 247, 0.55);
+}
+.cls-pill.cls-current {
+  background: linear-gradient(135deg, rgba(255, 61, 138, 0.24), rgba(168, 85, 247, 0.24));
+  border-color: var(--pink); color: var(--text);
+  box-shadow: 0 0 0 1px rgba(255, 61, 138, 0.25), 0 8px 24px -10px rgba(255, 61, 138, 0.55);
+  font-size: 16px;
+}
+.cls-pill.cls-current::before {
+  background: var(--pink); box-shadow: 0 0 10px rgba(255, 61, 138, 0.7);
+}
+.cls-pill.cls-current::after {
+  content: "この戦法"; color: #0b0f1a;
+  background: var(--gradient-hero);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  padding: 2px 8px; border-radius: 999px; margin-left: 4px;
+}
+
+.cls-children { position: relative; margin-top: 16px; padding-left: 36px; }
+.cls-children > .cls-branch + .cls-branch { margin-top: 22px; }
+.cls-children > .cls-branch::before {
+  content: ""; position: absolute;
+  left: -24px; top: -22px; width: 24px; height: 42px;
+  border-left: 2px solid var(--tree-line);
+  border-bottom: 2px solid var(--tree-line);
+  border-bottom-left-radius: 8px;
+}
+.cls-children > .cls-branch:first-child::before { top: -16px; height: 36px; }
+.cls-children > .cls-branch:not(:last-child)::after {
+  content: ""; position: absolute;
+  left: -24px; top: 20px; bottom: -22px; width: 0;
+  border-left: 2px solid var(--tree-line);
+}
+.cls-children > .cls-branch:has(> .cls-pill.cls-current)::before { border-color: var(--tree-line-pink); }
+.cls-branch:has(> .cls-pill.cls-current) > .cls-children > .cls-branch::before { border-color: var(--tree-line-pink); }
+
+.cls-comment {
+  margin-top: 8px; margin-left: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--tree-line-soft);
+  border-radius: 8px;
+  font-size: 13px; color: var(--text-dim);
+  line-height: 1.7; min-height: 38px;
+}
+.cls-branch:has(> .cls-pill.cls-current) > .cls-comment {
+  border-left-color: var(--pink);
+  background: rgba(255, 61, 138, 0.06);
+  font-size: 16px; padding: 14px 18px;
+}
+.cls-branch:has(> .cls-pill.cls-current) > .cls-comment h2,
+.cls-branch:has(> .cls-pill.cls-current) > .cls-comment h3 {
+  margin: 12px 0 6px; font-size: 22px; font-weight: 800;
+  color: var(--text); background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; letter-spacing: 0.02em;
+}
+.cls-branch:has(> .cls-pill.cls-current) > .cls-comment h4 {
+  margin: 10px 0 4px; font-size: 17px; font-weight: 700; color: var(--text);
+}
+.cls-branch:has(> .cls-pill.cls-current) > .cls-comment > *:first-child { margin-top: 0; }
+.cls-comment p { margin: 0; color: inherit; }
+.cls-comment p + p { margin-top: 6px; }
+.cls-note-placeholder { color: var(--text-muted) !important; font-style: italic; }
+
+.sankei-tree .sankei-leaf > .cls-pill {
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.sankei-tree .sankei-leaf > .cls-pill::before {
+  background: var(--pink-soft); box-shadow: 0 0 8px rgba(255, 126, 179, 0.5);
+}
+.sankei-tree .sankei-leaf::before { border-color: rgba(255, 126, 179, 0.5) !important; }
+.sankei-tree .sankei-leaf:not(:last-child)::after { border-color: rgba(255, 126, 179, 0.5) !important; }
+.sankei-body {
+  margin-top: 10px; margin-left: 6px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border); border-radius: 10px;
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 18px; align-items: start;
+}
+.sankei-body:not(:has(.mini-board-stack)) { grid-template-columns: 1fr; }
+@media (max-width: 720px) { .sankei-body { grid-template-columns: 1fr; } }
+.sankei-caption { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+.sankei-caption p { margin: 0 0 6px; color: inherit; }
+.sankei-caption p:last-child { margin-bottom: 0; }
+.sankei-link-row { grid-column: 1 / -1; margin-top: 4px; }
+.sankei-detail-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 61, 138, 0.18), rgba(168, 85, 247, 0.18));
+  border: 1px solid rgba(255, 61, 138, 0.45);
+  color: var(--text); text-decoration: none;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.03em;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sankei-detail-link:hover, .sankei-detail-link:active {
+  background: linear-gradient(135deg, rgba(255, 61, 138, 0.34), rgba(168, 85, 247, 0.34));
+  box-shadow: 0 6px 18px -8px rgba(255, 61, 138, 0.55);
+  transform: translateX(2px);
+}
+.sankei-detail-link.is-pending {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+.sankei-detail-link.is-pending:hover, .sankei-detail-link.is-pending:active {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none; transform: none;
+}
+
+.mini-board-stack {
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #2a3148, #1c2238);
+  border: 1px solid var(--border-hi); border-radius: 8px;
+  padding: 6px; width: max-content;
+  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.6);
+}
+.mini-board-stack.flipped { flex-direction: column-reverse; }
+.mini-board-stack .mini-hand {
+  min-height: 22px; padding: 2px 4px;
+  display: flex; flex-wrap: wrap; gap: 3px; align-items: center;
+}
+.mini-board-stack .mini-hand-piece {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px; padding: 1px 5px;
+  font-size: 11px; font-weight: 700; color: var(--text);
+}
+.mini-board-stack .mini-hand-piece.rotated { transform: rotate(180deg); }
+.mini-board-stack .mini-hand-empty { color: var(--text-muted); font-size: 9px; }
+.mini-board-stack table.mini-board {
+  border-collapse: collapse;
+  background: linear-gradient(180deg, #f0d8a0, #e6c98a);
+  border: 1px solid #2b1f1a; border-radius: 3px;
+  overflow: hidden; margin: 2px 0;
+}
+.mini-board-stack table.mini-board td {
+  width: 22px; height: 24px;
+  border: 1px solid rgba(43, 31, 26, 0.45);
+  text-align: center; vertical-align: middle;
+  position: relative; padding: 0;
+}
+.mini-board-stack table.mini-board .piece-glyph {
+  font-size: 14px; font-weight: 800; color: #1a1310;
+  line-height: 1; display: inline-block;
+}
+.mini-board-stack table.mini-board td.promoted .piece-glyph { color: #b54040; }
+.mini-board-stack table.mini-board td.last-to {
+  background: linear-gradient(135deg, #ff3d8a, #a855f7);
+  box-shadow: inset 0 0 0 2px #ff3d8a, 0 0 10px rgba(255, 61, 138, 0.6);
+}
+.mini-board-stack table.mini-board td.last-to .piece-glyph {
+  color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .proscons { grid-template-columns: 1fr; } }
+.proscons-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)), var(--surface-hi);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 18px 14px; overflow: hidden;
+}
+.proscons-card::before {
+  content: ""; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px; opacity: 0.9;
+}
+.proscons-card.pros::before { background: linear-gradient(90deg, #4ade80, #22e2ff); }
+.proscons-card.cons::before { background: linear-gradient(90deg, #ff3d8a, #ffb84d); }
+.proscons-card h3 {
+  margin: 0 0 10px; font-size: 16px; font-weight: 800;
+  letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 10px; color: var(--text);
+}
+.proscons-card.pros h3::before {
+  content: "✓";
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, #4ade80, #22e2ff);
+  color: #0b0f1a; border-radius: 50%;
+  font-weight: 900; font-size: 13px;
+}
+.proscons-card.cons h3::before {
+  content: "!";
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, #ff3d8a, #ffb84d);
+  color: #0b0f1a; border-radius: 50%;
+  font-weight: 900; font-size: 13px;
+}
+.proscons-card ul { margin: 4px 0 0; padding-left: 20px; }
+.proscons-card.pros ul li::before { background: linear-gradient(135deg, #4ade80, #22e2ff); }
+.proscons-card.cons ul li::before { background: linear-gradient(135deg, #ff3d8a, #ffb84d); }
+
+body.edit-mode [data-editable-key] {
+  outline: 1px dashed rgba(255, 61, 138, 0.5);
+  outline-offset: 4px;
+  background: rgba(255, 61, 138, 0.04);
+  cursor: text; border-radius: 4px;
+}
+body.edit-mode [data-editable-key]:focus {
+  outline: 2px solid var(--pink);
+  background: rgba(255, 61, 138, 0.06);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+::selection { background: rgba(255, 61, 138, 0.4); color: #fff; }
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <h1>やばボーズ流とは</h1>
+  <div id="edit-toolbar">
+    <label class="toggle-label"><input type="checkbox" id="edit-toggle"> 編集モード</label>
+    <button id="btn-save" class="primary" disabled>保存</button>
+    <button id="btn-reset">リセット</button>
+    <button id="btn-export">エクスポート</button>
+    <label class="import-label">
+      インポート <input type="file" id="btn-import" accept="application/json" hidden>
+    </label>
+    <span id="status-msg"></span>
+  </div>
+</header>
+
+<main>
+  <section class="catch" data-editable-key="catch">
+    <p class="catch-placeholder">（読み込み中…）</p>
+  </section>
+
+  <section class="winning-image">
+    <h2>勝ちのイメージ</h2>
+    <div class="board-and-caption">
+      <div id="hand-board-stack">
+        <div id="hand-gote" class="hand-row" data-color="gote"></div>
+        <div id="board-container">
+          <div id="file-coords" class="coord-row"></div>
+          <div id="board-row">
+            <div id="board-with-overlay">
+              <table id="board"></table>
+            </div>
+            <div id="rank-coords" class="coord-col"></div>
+          </div>
+        </div>
+        <div id="hand-sente" class="hand-row" data-color="sente"></div>
+      </div>
+      <div class="caption" data-editable-key="winning_caption">（読み込み中…）</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>どんな時に使えるか</h2>
+    <div data-editable-key="when_to_use">（読み込み中…）</div>
+  </section>
+
+  <section>
+    <h2>戦型分類</h2>
+    <div class="cls-tree">
+      <div class="cls-branch">
+        <div class="cls-pill">振り飛車</div>
+        <div class="cls-comment" data-editable-key="cls_note_furibisha">（読み込み中…）</div>
+        <div class="cls-children">
+          <div class="cls-branch">
+            <div class="cls-pill">角交換四間飛車</div>
+            <div class="cls-comment" data-editable-key="cls_note_kakukoukan">（読み込み中…）</div>
+            <div class="cls-children">
+              <div class="cls-branch">
+                <div class="cls-pill cls-current">やばボーズ流</div>
+                <div class="cls-comment" data-editable-key="cls_note_yababouzu">（読み込み中…）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>長所と短所</h2>
+    <div class="proscons">
+      <article class="proscons-card pros">
+        <h3>長所</h3>
+        <div data-editable-key="pros">（読み込み中…）</div>
+      </article>
+      <article class="proscons-card cons">
+        <h3>短所</h3>
+        <div data-editable-key="cons">（読み込み中…）</div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>3 大戦型</h2>
+    <div class="cls-tree sankei-tree">
+      <div class="cls-branch">
+        <div class="cls-pill cls-pill-root">やばボーズ流</div>
+        <div class="cls-children">
+          <div class="cls-branch sankei-leaf">
+            <div class="cls-pill">4五歩早仕掛け</div>
+            <div class="sankei-body">
+              <div class="mini-board-stack" data-sankei-key="4go"></div>
+              <div class="sankei-caption" data-editable-key="sankei_4go_caption">（読み込み中…）</div>
+              <div class="sankei-link-row">
+                <a class="sankei-detail-link" href="100_yababouze_45fu.html">▶ 4五歩早仕掛けの詳細ページを開く</a>
+              </div>
+            </div>
+          </div>
+          <div class="cls-branch sankei-leaf">
+            <div class="cls-pill">立石流風味</div>
+            <div class="sankei-body">
+              <div class="mini-board-stack" data-sankei-key="tateishi"></div>
+              <div class="sankei-caption" data-editable-key="sankei_tateishi_caption">（読み込み中…）</div>
+            </div>
+          </div>
+          <div class="cls-branch sankei-leaf">
+            <div class="cls-pill">2筋逆襲</div>
+            <div class="sankei-body">
+              <div class="mini-board-stack" data-sankei-key="2gyaku"></div>
+              <div class="sankei-caption" data-editable-key="sankei_2gyaku_caption">（読み込み中…）</div>
+            </div>
+          </div>
+          <div class="cls-branch sankei-leaf">
+            <div class="cls-pill">その他</div>
+            <div class="sankei-body">
+              <div class="sankei-caption" data-editable-key="sankei_other_caption">（読み込み中…）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>まとめ</h2>
+    <div data-editable-key="summary">（読み込み中…）</div>
+  </section>
+</main>
+
+<script>
+// ===== embedded data (intro_data.json) =====
+const INITIAL_DATA = {
+  "version": 1,
+  "final_sfen": "lng5l/2ks1rg2/ppppp2pp/6p2/5s1P1/2P3P2/PPSPPS2P/2KGG2R1/LN6L b BNPbnp 33",
+  "last_move": { "to": { "x": 4, "y": 5 } },
+  "sankei": {
+    "4go":      { "sfen": "lng5l/2ks1rg2/pppppsnpp/6p2/5p1P1/2P2PP2/PPSPPSN1P/2K1G2R1/LN1G4L b Bb 27", "last_move": { "to": { "x": 4, "y": 5 } } },
+    "tateishi": { "sfen": "lng5l/2ks2g2/1ppppsn2/p6rp/2P2ppp1/P1SPP3P/1PN1SPPP1/1KG1G2R1/L6NL b Bb 25", "last_move": { "to": { "x": 2, "y": 4 } } },
+    "2gyaku":   { "sfen": "lnsg3rl/2k3g2/1pppps2p/p4pp2/5n3/P1PP1SPp1/1PSPPP2P/1KG1G2R1/LN5NL b BPb 18", "last_move": { "to": { "x": 2, "y": 6 } } }
+  },
+  "blocks": {
+    "catch": "<p class=\"catch-placeholder\">やばボーズ流　入門</p>",
+    "winning_caption": "<p>4 筋から <strong>△4五銀</strong> と銀を繰り出した中盤戦。歩・桂の交換を経て、ここから 4 筋を破って先手陣を攻めるのが、やばボーズ流の代表的な狙い。</p>",
+    "when_to_use": "<ul><li>相手が <strong>居飛車</strong> のときに使う（対振り飛車では成立しない）</li><li><strong>後手・先手&nbsp;</strong><span style=\"letter-spacing: 0.16px;\">どちらでも使える戦法</span></li><li><span style=\"color: rgb(231, 236, 246); background-image: linear-gradient(transparent 60%, rgba(255, 61, 138, 0.25) 60%); background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 0px 2px; font-weight: 700; letter-spacing: 0.16px;\">方針が明確&nbsp;</span><span style=\"letter-spacing: 0.16px;\">。自分が攻める前に相手が仕掛けてきたら受ければよい</span></li></ul>",
+    "cls_note_furibisha": "振り飛車はどうしても受け身になってしまう。<div>　</div><div>　持久戦の場合、居飛車穴熊に苦労する<br>　急戦の場合、相手の攻めを受け止めてから中盤が始まる</div><div><br></div><div>　石田流やゴキゲン中飛車は、居飛車側の反発が強い</div><div>　</div><div>　受け将棋には向いている、長い中盤が好きな人には向いている</div><div>　</div>",
+    "cls_note_kakukoukan": "<p class=\"cls-note-placeholder\">&nbsp;<span style=\"letter-spacing: 0.16px; color: rgb(154, 163, 184);\">　居飛車側のかたい囲いをさせないために生まれた戦法</span></p><p class=\"cls-note-placeholder\"><span style=\"letter-spacing: 0.16px; color: rgb(154, 163, 184);\">　経験値がものをいう世界。手詰まりになりやすい</span></p>",
+    "cls_note_yababouzu": "<p class=\"cls-note-placeholder\">手詰まりになりにくく、やばボーズ流側の主張が明確</p>",
+    "pros": "<ul><li>細かい定跡を覚える必要がない</li><li>基本攻め手に困らない（<strong>4五歩・立石流・2筋逆襲</strong>）</li><li>速攻なので相手玉は固めにくい</li><li>経験値が重要な戦いになる</li><li>相手にこの戦型を強制させる戦法であり、自分の得意な展開になりやすい（4 手目の角交換)</li></ul>",
+    "cons": "<ul><li>玉が固くない、特に<strong style=\"background-color: rgba(255, 61, 138, 0.06); letter-spacing: 0.01em;\">玉頭が弱い</strong></li><li>玉形が弱いので、有利局面からしっかり勝ち切る必要がある</li><li>角の打ち込みに注意しながら戦う必要がある</li></ul>",
+    "sankei_4go_caption": "<p><strong>主力戦型<br></strong><br>先手 ▲3七桂・▲4七銀型に対して、<br>4 筋から銀を繰り出して △4五歩 と仕掛ける。<br><br>やばボーズ流が構造的に優位に立ちやすい本命の形。<br><br><br>一般的な角交換四間飛車に対して、居飛車側の通常の戦型なので</p><p>知らない人はほぼこの流れになる</p>",
+    "sankei_tateishi_caption": "<p>先手が ▲4六歩を保留して様子を見てきたとき、<br>飛車を浮かせて <strong>立石流の構え</strong> に移行する。<br><br>△2四飛 で 2-3-4 筋に同時に効かせる横利きが主張。</p><p><br></p><p>守りも金銀の連結が、美しくバランスが取れている</p>",
+    "sankei_2gyaku_caption": "<p>早めの ▲2四歩で飛車先を突進されたとき、</p><p><br></p><p>飛車を <strong>△2一</strong> まで振り直し、</p><p>△2四歩 〜 △2五歩 〜 <strong>△2六歩</strong> と歩を連続突進して 2 筋を逆襲する。</p><p><br></p><p>級位者~低段相手に良く出現する</p><p>研究がしやすい</p>",
+    "sankei_other_caption": "・棒銀&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-&gt;角交換済みなので棒銀の目標の角自体が存在しない(空振り)<div>・地下鉄飛車等&nbsp; &nbsp; &nbsp;-&gt;玉側の端を狙ってくる　ただし、地下鉄飛車にするには銀と桂馬を繰り出す必要があり、</div><div>　　　　　　　　　　４五歩早仕掛けの的になりやすい</div><div>　　　　　　　　　</div><div>　　　　　　　　　　美濃囲いより端は弱いが、端を破らせて、左側に逃げる方法もある<br><br></div>",
+    "summary": "<ul><li>角を消して、相手に右辺の駒組みをさせてから振る</li><li>玉を 7 筋に収め、後手番でも自分から仕掛けの形を作る</li><li>相手の出方で 3 つの形（<strong>4五歩早仕掛け</strong> / <strong>立石流風味</strong> / <strong>2筋逆襲</strong>）を使い分ける</li></ul>"
+  }
+};
+
+// ===== jkf.js =====
+const INITIAL_SFEN = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+const NUM_KAN = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+const SFEN_LETTER_TO_KANJI = { P: "歩", L: "香", N: "桂", S: "銀", G: "金", B: "角", R: "飛", K: "玉" };
+const PROMOTED_LETTER_TO_KANJI = { P: "と", L: "杏", N: "圭", S: "全", B: "馬", R: "龍" };
+function parseSfen(sfen) {
+  const parts = sfen.split(" ");
+  const boardStr = parts[0]; const turn = parts[1]; const handStr = parts[2] || "-";
+  const grid = [];
+  for (const row of boardStr.split("/")) {
+    const r = []; let i = 0;
+    while (i < row.length) {
+      const ch = row[i];
+      if (/[1-9]/.test(ch)) { const n = parseInt(ch); for (let j=0;j<n;j++) r.push(null); i++; }
+      else if (ch === "+") { const next = row[i+1]; r.push({ letter: next.toUpperCase(), color: next === next.toUpperCase() ? "sente":"gote", promoted: true }); i += 2; }
+      else { r.push({ letter: ch.toUpperCase(), color: ch === ch.toUpperCase() ? "sente":"gote", promoted: false }); i++; }
+    }
+    grid.push(r);
+  }
+  const senteHand = {}, goteHand = {};
+  if (handStr !== "-") {
+    let i = 0;
+    while (i < handStr.length) {
+      let num = "";
+      while (i < handStr.length && /\d/.test(handStr[i])) { num += handStr[i]; i++; }
+      const count = num ? parseInt(num) : 1;
+      const ch = handStr[i]; if (!ch) break;
+      const target = ch === ch.toUpperCase() ? senteHand : goteHand;
+      const key = ch.toUpperCase();
+      target[key] = (target[key] || 0) + count;
+      i++;
+    }
+  }
+  return { grid, turn, senteHand, goteHand };
+}
+function pieceKanji(cell) {
+  if (!cell) return "";
+  const map = cell.promoted ? PROMOTED_LETTER_TO_KANJI : SFEN_LETTER_TO_KANJI;
+  return map[cell.letter] || cell.letter;
+}
+
+// ===== board.js =====
+let FLIPPED = true;
+function setFlipped(v) { FLIPPED = !!v; }
+function cellIndexToFileRank(col, row) { let c=col, r=row; if (FLIPPED){c=8-c;r=8-r;} return { file: 9-c, rank: r+1 }; }
+function renderBoard(sfen, lastMove) {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  if (!sfen) sfen = INITIAL_SFEN;
+  const { grid, senteHand, goteHand } = parseSfen(sfen);
+  for (let displayRow = 0; displayRow < 9; displayRow++) {
+    const tr = document.createElement("tr");
+    for (let displayCol = 0; displayCol < 9; displayCol++) {
+      const td = document.createElement("td");
+      const { file, rank } = cellIndexToFileRank(displayCol, displayRow);
+      const sfenCol = 9 - file; const sfenRow = rank - 1;
+      const cell = grid[sfenRow][sfenCol];
+      if (cell) {
+        const span = document.createElement("span");
+        span.className = "piece-glyph";
+        span.textContent = pieceKanji(cell);
+        if ((cell.color === "gote" && !FLIPPED) || (cell.color === "sente" && FLIPPED)) span.style.transform = "rotate(180deg)";
+        td.appendChild(span);
+        if (cell.promoted) td.classList.add("promoted");
+      }
+      if (lastMove && lastMove.to && file === lastMove.to.x && rank === lastMove.to.y) td.classList.add("last-to");
+      td.dataset.file = file; td.dataset.rank = rank;
+      tr.appendChild(td);
+    }
+    board.appendChild(tr);
+  }
+  renderCoordinates();
+  renderHand("hand-sente", senteHand, "sente");
+  renderHand("hand-gote", goteHand, "gote");
+  document.getElementById("hand-board-stack").classList.toggle("flipped", FLIPPED);
+}
+function renderCoordinates() {
+  const fileEl = document.getElementById("file-coords");
+  const rankEl = document.getElementById("rank-coords");
+  fileEl.innerHTML = ""; rankEl.innerHTML = "";
+  for (let displayCol = 0; displayCol < 9; displayCol++) {
+    const { file } = cellIndexToFileRank(displayCol, 0);
+    const span = document.createElement("span"); span.textContent = file; fileEl.appendChild(span);
+  }
+  for (let displayRow = 0; displayRow < 9; displayRow++) {
+    const { rank } = cellIndexToFileRank(0, displayRow);
+    const span = document.createElement("span"); span.textContent = NUM_KAN[rank]; rankEl.appendChild(span);
+  }
+}
+function renderHand(id, hand, color) {
+  const el = document.getElementById(id); el.innerHTML = "";
+  const order = ["R", "B", "G", "S", "N", "L", "P"];
+  const shouldRotate = (color === "gote" && !FLIPPED) || (color === "sente" && FLIPPED);
+  let any = false;
+  for (const k of order) {
+    if (!hand[k]) continue;
+    any = true;
+    const span = document.createElement("span");
+    span.className = "hand-piece";
+    if (shouldRotate) span.classList.add("rotated");
+    span.textContent = `${SFEN_LETTER_TO_KANJI[k] || k}${hand[k] > 1 ? hand[k] : ""}`;
+    el.appendChild(span);
+  }
+  if (!any) {
+    const ph = document.createElement("span");
+    ph.className = "hand-empty";
+    ph.textContent = `(${color === "sente" ? "先手" : "後手"} 持駒なし)`;
+    el.appendChild(ph);
+  }
+}
+
+// ===== intro logic =====
+const STORAGE_KEY = "yababouze:intro:standalone:v1";
+let initialData = INITIAL_DATA;
+let currentBlocks = null;
+let dirty = false;
+const $ = (sel) => document.querySelector(sel);
+
+function loadOverrides() {
+  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e) { return null; }
+}
+function mergeBlocks() {
+  const overrides = loadOverrides() || {};
+  currentBlocks = { ...initialData.blocks, ...overrides };
+}
+function sanitize(html) {
+  const tmp = document.createElement("div"); tmp.innerHTML = html;
+  tmp.querySelectorAll("script, style, iframe, object, embed").forEach(el => el.remove());
+  tmp.querySelectorAll("*").forEach(el => {
+    [...el.attributes].forEach(attr => {
+      const name = attr.name.toLowerCase();
+      const val = attr.value.trim().toLowerCase();
+      if (name.startsWith("on")) el.removeAttribute(attr.name);
+      else if ((name === "href" || name === "src") && val.startsWith("javascript:")) el.removeAttribute(attr.name);
+    });
+  });
+  return tmp.innerHTML;
+}
+function applyBlocks() {
+  document.querySelectorAll("[data-editable-key]").forEach(el => {
+    const key = el.dataset.editableKey;
+    const html = currentBlocks[key];
+    if (html != null) el.innerHTML = sanitize(html);
+  });
+}
+function renderFinalBoard() {
+  setFlipped(true);
+  renderBoard(initialData.final_sfen, initialData.last_move);
+}
+
+// mini-board
+const HAND_ORDER = ["R", "B", "G", "S", "N", "L", "P"];
+function fillMiniHand(el, hand, color, flipped) {
+  el.innerHTML = "";
+  const shouldRotate = (color === "gote" && !flipped) || (color === "sente" && flipped);
+  let any = false;
+  for (const k of HAND_ORDER) {
+    if (!hand[k]) continue;
+    any = true;
+    const span = document.createElement("span");
+    span.className = "mini-hand-piece";
+    if (shouldRotate) span.classList.add("rotated");
+    span.textContent = `${SFEN_LETTER_TO_KANJI[k] || k}${hand[k] > 1 ? hand[k] : ""}`;
+    el.appendChild(span);
+  }
+  if (!any) {
+    const ph = document.createElement("span");
+    ph.className = "mini-hand-empty";
+    ph.textContent = `(${color === "sente" ? "先" : "後"}持駒なし)`;
+    el.appendChild(ph);
+  }
+}
+function renderMiniBoardInto(rootEl, sfen, lastMove, flipped = true) {
+  const { grid, senteHand, goteHand } = parseSfen(sfen);
+  rootEl.innerHTML = "";
+  rootEl.classList.toggle("flipped", flipped);
+  const handGote = document.createElement("div"); handGote.className = "mini-hand";
+  fillMiniHand(handGote, goteHand, "gote", flipped); rootEl.appendChild(handGote);
+  const table = document.createElement("table"); table.className = "mini-board";
+  for (let displayRow = 0; displayRow < 9; displayRow++) {
+    const tr = document.createElement("tr");
+    for (let displayCol = 0; displayCol < 9; displayCol++) {
+      const td = document.createElement("td");
+      let col = displayCol, row = displayRow;
+      if (flipped) { col = 8 - col; row = 8 - row; }
+      const file = 9 - col, rank = row + 1;
+      const sfenCol = 9 - file, sfenRow = rank - 1;
+      const cell = grid[sfenRow][sfenCol];
+      if (cell) {
+        const span = document.createElement("span");
+        span.className = "piece-glyph";
+        span.textContent = pieceKanji(cell);
+        if ((cell.color === "gote" && !flipped) || (cell.color === "sente" && flipped)) span.style.transform = "rotate(180deg)";
+        td.appendChild(span);
+        if (cell.promoted) td.classList.add("promoted");
+      }
+      if (lastMove && lastMove.to && file === lastMove.to.x && rank === lastMove.to.y) td.classList.add("last-to");
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  rootEl.appendChild(table);
+  const handSente = document.createElement("div"); handSente.className = "mini-hand";
+  fillMiniHand(handSente, senteHand, "sente", flipped); rootEl.appendChild(handSente);
+}
+function renderSankeiBoards() {
+  const sankei = initialData.sankei || {};
+  document.querySelectorAll(".mini-board-stack[data-sankei-key]").forEach(el => {
+    const key = el.dataset.sankeiKey;
+    const data = sankei[key];
+    if (!data || !data.sfen) return;
+    renderMiniBoardInto(el, data.sfen, data.last_move, true);
+  });
+}
+
+// edit mode
+function setEditMode(on) {
+  document.body.classList.toggle("edit-mode", on);
+  document.querySelectorAll("[data-editable-key]").forEach(el => {
+    if (on) { el.setAttribute("contenteditable", "true"); el.addEventListener("input", markDirty); }
+    else { el.removeAttribute("contenteditable"); el.removeEventListener("input", markDirty); }
+  });
+  $("#btn-save").disabled = !on || !dirty;
+}
+function markDirty() {
+  dirty = true; $("#btn-save").disabled = false;
+  setStatus("未保存の変更あり", "#fdb6b6");
+}
+function setStatus(msg, color) {
+  const el = $("#status-msg");
+  el.textContent = msg || "";
+  el.style.color = color || "#22e2ff";
+}
+function collectCurrentHtml() {
+  const out = {};
+  document.querySelectorAll("[data-editable-key]").forEach(el => {
+    out[el.dataset.editableKey] = sanitize(el.innerHTML.trim());
+  });
+  return out;
+}
+function save() {
+  const blocks = collectCurrentHtml();
+  const overrides = {};
+  for (const [k, v] of Object.entries(blocks)) {
+    if (initialData.blocks[k] !== v) overrides[k] = v;
+  }
+  if (Object.keys(overrides).length === 0) localStorage.removeItem(STORAGE_KEY);
+  else localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
+  currentBlocks = blocks;
+  dirty = false;
+  $("#btn-save").disabled = true;
+  setStatus("保存しました", "#a8e6a3");
+  setTimeout(() => setStatus(""), 2000);
+}
+function reset() {
+  if (!confirm("初期ドラフトに戻します。現在の編集内容は失われます。よろしいですか？")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  mergeBlocks(); applyBlocks();
+  dirty = false;
+  $("#btn-save").disabled = !$("#edit-toggle").checked;
+  setStatus("リセットしました", "#a8e6a3");
+  setTimeout(() => setStatus(""), 2000);
+}
+function exportJson() {
+  const blocks = collectCurrentHtml();
+  const payload = { version: 1, exported_at: new Date().toISOString(), blocks };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  a.download = `yababouze_intro_${stamp}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  setStatus("エクスポート完了", "#a8e6a3");
+  setTimeout(() => setStatus(""), 2000);
+}
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const blocks = data.blocks || data;
+      if (typeof blocks !== "object") throw new Error("invalid format");
+      const overrides = {};
+      for (const [k, v] of Object.entries(blocks)) {
+        if (initialData.blocks[k] !== v) overrides[k] = v;
+      }
+      if (Object.keys(overrides).length === 0) localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
+      mergeBlocks(); applyBlocks();
+      dirty = false;
+      $("#btn-save").disabled = !$("#edit-toggle").checked;
+      setStatus("インポート完了", "#a8e6a3");
+      setTimeout(() => setStatus(""), 2000);
+    } catch (err) { alert("インポート失敗：" + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// boot
+function main() {
+  mergeBlocks();
+  applyBlocks();
+  renderFinalBoard();
+  renderSankeiBoards();
+  $("#edit-toggle").addEventListener("change", (e) => setEditMode(e.target.checked));
+  $("#btn-save").addEventListener("click", save);
+  $("#btn-reset").addEventListener("click", reset);
+  $("#btn-export").addEventListener("click", exportJson);
+  $("#btn-import").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (f) importJson(f);
+    e.target.value = "";
+  });
+  window.addEventListener("beforeunload", (e) => {
+    if (dirty) { e.preventDefault(); e.returnValue = ""; }
+  });
+}
+main();
+</script>
+</body>
+</html>
