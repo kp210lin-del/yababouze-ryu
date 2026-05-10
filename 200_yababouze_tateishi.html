@@ -537,6 +537,16 @@ section strong {
   background: rgba(255,61,138,0.08);
 }
 .practical-games .game-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+.practical-games .game-controls .autoplay-btn {
+  margin-left: 6px;
+  border-color: rgba(168, 85, 247, 0.45);
+  background: rgba(168, 85, 247, 0.10);
+}
+.practical-games .game-controls .autoplay-btn.is-playing {
+  border-color: var(--pink);
+  background: linear-gradient(135deg, rgba(255, 61, 138, 0.28), rgba(168, 85, 247, 0.20));
+  box-shadow: 0 0 14px rgba(255, 61, 138, 0.35);
+}
 .practical-games .game-ply-indicator {
   min-width: 108px; text-align: center;
   font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
@@ -46610,6 +46620,7 @@ function buildPracticalGame(key) {
     <span class="game-ply-indicator">初期局面 / ${g.steps.length - 1}</span>
     <button data-game-action="next"  title="1 手進める">▶</button>
     <button data-game-action="end"   title="最終局面へ">⏭</button>
+    <button data-game-action="autoplay" class="autoplay-btn" title="自動再生 (2秒/手)">⏩</button>
   `;
   wrap.appendChild(ctrls);
   stage.appendChild(wrap);
@@ -46627,6 +46638,7 @@ function buildPracticalGame(key) {
       if (document.body.classList.contains("edit-mode")) return;
       const ed = ev.target.closest && ev.target.closest("[data-editable-key]");
       if (ed && ed.getAttribute("contenteditable") === "true") return;
+      stopGameAutoplay();
       setGamePly(key, ply);
     });
   });
@@ -46637,6 +46649,8 @@ function buildPracticalGame(key) {
   ctrls.querySelectorAll("button[data-game-action]").forEach(btn => {
     btn.addEventListener("click", () => {
       const a = btn.dataset.gameAction;
+      if (a === "autoplay") { toggleGameAutoplay(key); return; }
+      stopGameAutoplay();
       const last = g.steps.length - 1;
       const cur = gameCurrentPly[key] || 0;
       if (a === "start") setGamePly(key, 0);
@@ -46646,12 +46660,58 @@ function buildPracticalGame(key) {
     });
   });
 }
+const GAME_AUTOPLAY_MS = 2000;
+let gameAutoplayTimer = null;
+let gameAutoplayKey = null;
+function stopGameAutoplay() {
+  if (gameAutoplayTimer) {
+    clearInterval(gameAutoplayTimer);
+    gameAutoplayTimer = null;
+  }
+  gameAutoplayKey = null;
+  document.querySelectorAll('button[data-game-action="autoplay"]').forEach(btn => {
+    btn.classList.remove("is-playing");
+    btn.textContent = "⏩";
+    btn.title = "自動再生 (2秒/手)";
+  });
+}
+function startGameAutoplay(key) {
+  stopGameAutoplay();
+  const g = initialData.practical_games && initialData.practical_games[key];
+  if (!g) return;
+  if ((gameCurrentPly[key] || 0) >= g.steps.length - 1) setGamePly(key, 0);
+  gameAutoplayKey = key;
+  const btn = document.querySelector(`[data-game-controls="${key}"] button[data-game-action="autoplay"]`);
+  if (btn) {
+    btn.classList.add("is-playing");
+    btn.textContent = "⏸";
+    btn.title = "停止";
+  }
+  gameAutoplayTimer = setInterval(() => {
+    const k = gameAutoplayKey;
+    if (!k) { stopGameAutoplay(); return; }
+    const g2 = initialData.practical_games[k];
+    if (!g2) { stopGameAutoplay(); return; }
+    const cur = gameCurrentPly[k] || 0;
+    const last = g2.steps.length - 1;
+    if (cur >= last) { stopGameAutoplay(); return; }
+    setGamePly(k, cur + 1);
+  }, GAME_AUTOPLAY_MS);
+}
+function toggleGameAutoplay(key) {
+  if (gameAutoplayTimer && gameAutoplayKey === key) stopGameAutoplay();
+  else startGameAutoplay(key);
+}
+function gameFlipped(g) {
+  // やばボーズ側を常に手前に。先手なら flipped=false、後手なら true。
+  return g && g.yaba_side !== "sente";
+}
 function renderGameBoardEl(key) {
   const g = initialData.practical_games[key];
   const ply = gameCurrentPly[key] || 0;
   const step = g.steps[ply];
   const board = document.querySelector(`[data-game-board="${key}"]`);
-  if (board) renderMiniBoardInto(board, step.sfen, step.last_move, true);
+  if (board) renderMiniBoardInto(board, step.sfen, step.last_move, gameFlipped(g));
   const indicator = document.querySelector(`[data-game-controls="${key}"] .game-ply-indicator`);
   if (indicator) {
     indicator.textContent = ply === 0
@@ -46709,6 +46769,7 @@ function populateGamePicker() {
 }
 function switchGame(key) {
   if (!initialData.practical_games || !initialData.practical_games[key]) return;
+  stopGameAutoplay();
   const root = document.getElementById("practical-games-root");
   if (!root) return;
   // 既存ゲームブロックを破棄
