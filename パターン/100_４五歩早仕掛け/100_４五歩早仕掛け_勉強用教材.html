@@ -85,25 +85,56 @@ main {
   padding: 24px 20px 80px;
   display: grid; grid-template-columns: 280px 1fr; gap: 20px;
 }
-/* iPad 縦・タブレット縦は単カラム + 盤を上に */
+/* iPad 縦・タブレット縦：盤を上、操作ボタンを盤の直下、状態文を最下段に。
+   display: contents で sidebar / board-area の箱を消し、全項目を main の grid item に。
+   order で意図した縦並びを実現。 */
 @media (max-width: 1100px) {
   main {
-    grid-template-columns: 1fr;
-    padding: 12px 10px 40px;
-    gap: 12px;
-    max-width: 100%;
-  }
-  .board-area { order: -1; }
-  .sidebar {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    align-items: start;
+    padding: 6px 8px 14px;
+    gap: 8px;
+    max-width: 100%;
   }
-  .sidebar > section.panel { padding: 12px 14px; }
-  .sidebar > section.panel h2 { font-size: 14px; margin-bottom: 8px; }
-  /* メモパネルは全幅にする */
-  #head-comments-panel { grid-column: 1 / -1; }
+  .sidebar, .board-area { display: contents; }
+
+  /* 1. 盤 (full width) */
+  #hand-board-stack {
+    grid-column: 1 / -1;
+    order: 1;
+    justify-self: center;
+  }
+  /* 2. 操作ボタン (盤の直下) */
+  .sidebar > section.panel:has(> .controls) {
+    grid-column: 1 / -1;
+    order: 2;
+    padding: 6px 10px;
+  }
+  .sidebar > section.panel:has(> .controls) h2 { display: none; }
+  /* 3. 問題 / 4. 進捗 (1 行 2 列で並ぶ) */
+  .sidebar > section.panel:nth-of-type(1) { grid-column: 1; order: 3; padding: 8px 12px; }
+  .sidebar > section.panel:nth-of-type(2) { grid-column: 2; order: 4; padding: 8px 12px; }
+  .sidebar > section.panel h2 { font-size: 12px; margin-bottom: 4px; }
+  .progress-card { padding: 4px 10px; }
+  .progress-card .progress-value { font-size: 16px; }
+  .turn-indicator { padding: 4px 8px; font-size: 11px; margin-top: 6px !important; }
+  /* 5. メモ */
+  #head-comments-panel { grid-column: 1 / -1; order: 5; padding: 8px 12px; }
+  /* 6. 指し手ログ (小さく) */
+  .move-log {
+    grid-column: 1 / -1;
+    order: 6;
+    max-height: 60px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  /* 7. 状態メッセージ (最下段) */
+  #status-msg {
+    grid-column: 1 / -1;
+    order: 7;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
 }
 
 section.panel {
@@ -242,55 +273,49 @@ section.panel h2::before {
   line-height: 1; display: inline-block;
 }
 
-/* iPad 縦想定：盤面を最大限大きく
-   セルサイズ = 幅予算と高さ予算の小さい方を採用。
+/* iPad 縦想定：盤面サイズ = 幅予算と高さ予算の min。
    - 幅予算 : (画面幅 - パディング・座標欄分) / 9
-   - 高さ予算: (画面高 - topbar・持駒2段・status・余白) / 9 */
+   - 高さ予算: (画面高 dvh - topbar・操作・問題進捗・log・status・余白) / 9.9 */
 @media (max-width: 1100px) {
   :root {
     --cell-size: min(
       calc((100vw - 60px) / 9),
-      calc((100vh - 330px) / 9.9)
+      calc((100dvh - 430px) / 9.9)
     );
   }
   #board td {
-    width: clamp(42px, var(--cell-size), 82px);
-    height: clamp(46px, calc(var(--cell-size) * 1.1), 90px);
+    width: clamp(40px, var(--cell-size), 82px);
+    height: clamp(44px, calc(var(--cell-size) * 1.1), 90px);
   }
   .piece-glyph {
-    font-size: clamp(26px, calc(var(--cell-size) * 0.62), 50px);
+    font-size: clamp(24px, calc(var(--cell-size) * 0.62), 50px);
   }
   .hand-piece {
-    font-size: clamp(14px, calc(var(--cell-size) * 0.34), 26px);
-    padding: 5px 12px;
+    font-size: clamp(13px, calc(var(--cell-size) * 0.32), 24px);
+    padding: 3px 10px;
     border-radius: 8px;
   }
-  .hand-row { min-height: 42px; padding: 6px 8px; gap: 8px; }
+  .hand-row { min-height: 34px; padding: 4px 6px; gap: 6px; }
   .coord-row span, .coord-col span {
-    font-size: clamp(11px, calc(var(--cell-size) * 0.22), 16px);
+    font-size: clamp(10px, calc(var(--cell-size) * 0.22), 16px);
   }
-  #hand-board-stack { padding: 10px; }
+  #hand-board-stack { padding: 6px; }
 
-  /* 操作パネルはサイドバー2カラムを跨いで全幅、ボタンは横1列の4等分 */
-  .sidebar > section.panel:has(> .controls) {
-    grid-column: 1 / -1;
-  }
+  /* 操作ボタン：横 4 等分の 1 行 */
   .controls {
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
   }
   .controls button {
     font-size: 12px;
-    padding: 10px 4px;
+    padding: 9px 4px;
     white-space: nowrap;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .controls button.primary { padding: 11px 6px; font-size: 13px; }
-  #problem-select { font-size: 16px; padding: 10px 12px; }
-  .move-log { max-height: 160px; font-size: 14px; }
-  #status-msg { font-size: 15px; padding: 8px 14px; }
+  .controls button.primary { padding: 10px 6px; font-size: 13px; }
+  #problem-select { font-size: 16px; padding: 6px 10px; }
 }
 #board td.promoted .piece-glyph { color: #b54040; }
 #board td.last-to {
@@ -411,7 +436,7 @@ section.panel h2::before {
 
 <header id="topbar">
   <h1>４五歩早仕掛け 勉強用教材</h1>
-  <span class="ver-badge" title="ページのバージョン。push 毎に上がる">v3 · 2026-05-15</span>
+  <span class="ver-badge" title="ページのバージョン。push 毎に上がる">v4 · 2026-05-15</span>
   <a class="back-link" href="./100_４五歩早仕掛け_基本部分図.html">← 基本部分図に戻る</a>
 </header>
 
