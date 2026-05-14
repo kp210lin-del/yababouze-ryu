@@ -736,6 +736,35 @@ body.edit-mode [data-editable-key]:focus {
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 ::selection { background: rgba(255, 61, 138, 0.4); color: #fff; }
+
+/* 勉強用教材リンクカード */
+section.study-link p { color: var(--text-dim); margin: 0 0 14px; }
+.study-link-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(255, 61, 138, 0.12), rgba(168, 85, 247, 0.10) 60%, rgba(34, 226, 255, 0.10));
+  border: 1px solid var(--border-hi); border-radius: 12px;
+  text-decoration: none; color: var(--text);
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+.study-link-card:hover {
+  border-color: var(--pink);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px -10px rgba(255, 61, 138, 0.3);
+}
+.study-link-card-title {
+  font-size: 17px; font-weight: 800; letter-spacing: 0.01em;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.study-link-card-sub { font-size: 13px; color: var(--text-dim); }
+.study-link-card-arrow {
+  margin-left: auto; font-size: 22px; font-weight: 700;
+  color: var(--pink); transition: transform 0.18s ease;
+}
+.study-link-card:hover .study-link-card-arrow { transform: translateX(4px); }
+
 </style>
 </head>
 <body>
@@ -850,6 +879,16 @@ body.edit-mode [data-editable-key]:focus {
       <span id="game-counter" class="game-counter"></span>
     </div>
     <!-- JS が data-game-key の slot を生成 -->
+  </section>
+
+  <section class="study-link" id="study-link-section">
+    <h2>勉強用教材で実際に並べる</h2>
+    <p>典型 10 局面をブラウザ上で手を動かして覚えるための練習ビューア。あなたが やばボーズ流 (後手) 側を指し、棋譜通りの手だけ受け付け、相手側は自動で進みます。</p>
+    <a class="study-link-card" href="./パターン/100_４五歩早仕掛け/100_４五歩早仕掛け_勉強用教材.html">
+      <span class="study-link-card-title">勉強用教材を開く</span>
+      <span class="study-link-card-sub">001 〜 010 / 全 10 問</span>
+      <span class="study-link-card-arrow">→</span>
+    </a>
   </section>
 </main>
 
