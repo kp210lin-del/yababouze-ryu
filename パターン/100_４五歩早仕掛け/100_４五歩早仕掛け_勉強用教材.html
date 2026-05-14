@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>４五歩早仕掛け 勉強用教材 — やばボーズ流</title>
+<style>
+:root {
+  --bg: #0b0f1a;
+  --bg-2: #11172a;
+  --surface: #161c2e;
+  --surface-hi: #1d2540;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(255, 255, 255, 0.16);
+  --text: #e7ecf6;
+  --text-dim: #9aa3b8;
+  --text-muted: #6b7390;
+  --pink: #ff3d8a;
+  --pink-soft: #ff7eb3;
+  --cyan: #22e2ff;
+  --purple: #a855f7;
+  --amber: #ffb84d;
+  --red: #ff5566;
+  --green: #46d18b;
+  --gradient-hero: linear-gradient(135deg, #ff3d8a 0%, #a855f7 50%, #22e2ff 100%);
+  --gradient-line: linear-gradient(90deg, #ff3d8a, #a855f7 60%, #22e2ff);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Inter", "SF Pro Display", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(168, 85, 247, 0.18), transparent 60%),
+    radial-gradient(1000px 500px at 110% 10%, rgba(34, 226, 255, 0.12), transparent 55%),
+    radial-gradient(900px 600px at 50% 110%, rgba(255, 61, 138, 0.12), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+#topbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 22px;
+  background: rgba(11, 15, 26, 0.7);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 10;
+}
+#topbar::after {
+  content: ""; position: absolute;
+  left: 0; right: 0; bottom: -1px; height: 1px;
+  background: var(--gradient-line); opacity: 0.6;
+}
+#topbar h1 {
+  margin: 0; font-size: 18px; font-weight: 800;
+  letter-spacing: 0.02em; white-space: nowrap;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+#topbar .back-link {
+  margin-left: auto;
+  color: var(--text-dim); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; transition: all 0.18s ease;
+}
+#topbar .back-link:hover { color: var(--text); border-color: var(--border-hi); background: rgba(255, 255, 255, 0.05); }
+
+main {
+  max-width: 1080px; margin: 0 auto;
+  padding: 24px 20px 80px;
+  display: grid; grid-template-columns: 280px 1fr; gap: 20px;
+}
+@media (max-width: 820px) {
+  main { grid-template-columns: 1fr; }
+}
+
+section.panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005)), var(--surface);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 30px -16px rgba(0, 0, 0, 0.5);
+}
+section.panel h2 {
+  margin: 0 0 12px; font-size: 15px; font-weight: 700;
+  color: var(--text); letter-spacing: 0.02em;
+  display: flex; align-items: center; gap: 10px;
+}
+section.panel h2::before {
+  content: ""; width: 3px; height: 16px; border-radius: 2px;
+  background: var(--gradient-hero); flex-shrink: 0;
+}
+
+.sidebar { display: flex; flex-direction: column; gap: 14px; }
+.problem-row { display: flex; flex-direction: column; gap: 8px; }
+.problem-row label { font-size: 11px; color: var(--text-muted); }
+#problem-select {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 14px; font-family: inherit;
+}
+#problem-select:focus { outline: none; border-color: var(--pink); }
+
+.progress-card {
+  display: flex; justify-content: space-between; align-items: baseline;
+  background: rgba(34, 226, 255, 0.06);
+  border: 1px solid rgba(34, 226, 255, 0.18);
+  border-radius: 8px; padding: 10px 14px;
+}
+.progress-card .progress-label { font-size: 11px; color: var(--text-muted); }
+.progress-card .progress-value {
+  font-size: 22px; font-weight: 800;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.turn-indicator {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; padding: 8px 10px;
+  border-radius: 8px; background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+}
+.turn-indicator .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.turn-indicator.user .dot { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.turn-indicator.opp .dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.controls button {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 12px; cursor: pointer;
+  font-family: inherit; transition: all 0.18s ease;
+}
+.controls button:hover:not(:disabled) {
+  border-color: var(--border-hi); color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+}
+.controls button.primary {
+  grid-column: 1 / -1;
+  background: var(--gradient-hero); color: #0b0f1a;
+  border: 0; font-weight: 700; padding: 9px 14px;
+  box-shadow: 0 4px 18px rgba(255, 61, 138, 0.25);
+}
+.controls button.primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 24px rgba(255, 61, 138, 0.4);
+}
+.controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.head-comments {
+  font-size: 12px; color: var(--text-dim);
+  border-left: 2px solid var(--cyan);
+  padding-left: 10px;
+  white-space: pre-wrap;
+}
+
+.board-area { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+#hand-board-stack {
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #2a3148, #1c2238);
+  border: 1px solid var(--border-hi); border-radius: 10px;
+  padding: 8px; width: max-content;
+  box-shadow: 0 18px 44px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(168, 85, 247, 0.1) inset;
+}
+#hand-board-stack.flipped { flex-direction: column-reverse; }
+.hand-row {
+  min-height: 30px; padding: 4px 6px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.hand-piece {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px; padding: 3px 9px;
+  font-size: 14px; font-weight: 700; color: var(--text);
+  cursor: default; user-select: none;
+}
+.hand-piece.rotated { transform: rotate(180deg); }
+.hand-piece.clickable { cursor: pointer; transition: all 0.12s ease; }
+.hand-piece.clickable:hover { border-color: var(--pink); background: rgba(255, 61, 138, 0.08); }
+.hand-piece.selected {
+  border-color: var(--pink); background: rgba(255, 61, 138, 0.18);
+  box-shadow: 0 0 10px rgba(255, 61, 138, 0.4);
+}
+.hand-empty { color: var(--text-muted); font-size: 11px; }
+
+#board-container { display: flex; flex-direction: column; gap: 4px; }
+.coord-row { display: flex; justify-content: space-around; padding: 0 2px; font-size: 11px; color: var(--text-muted); }
+.coord-col { display: flex; flex-direction: column; justify-content: space-around; padding: 2px 0; font-size: 11px; color: var(--text-muted); }
+#board-row { display: flex; align-items: stretch; gap: 4px; }
+#board {
+  border-collapse: collapse;
+  background: linear-gradient(180deg, #f0d8a0, #e6c98a);
+  border: 1px solid #2b1f1a; border-radius: 4px; overflow: hidden;
+}
+#board td {
+  width: 42px; height: 46px;
+  border: 1px solid rgba(43, 31, 26, 0.45);
+  text-align: center; vertical-align: middle;
+  position: relative; padding: 0;
+  cursor: default;
+  user-select: none;
+}
+#board td.clickable { cursor: pointer; }
+#board td.clickable:hover { background: linear-gradient(180deg, #fae6b0, #f0d896); }
+.piece-glyph {
+  font-size: 26px; font-weight: 800; color: #1a1310;
+  line-height: 1; display: inline-block;
+}
+#board td.promoted .piece-glyph { color: #b54040; }
+#board td.last-to {
+  background: linear-gradient(135deg, #ff3d8a, #a855f7);
+  box-shadow: inset 0 0 0 2px #ff3d8a, 0 0 14px rgba(255, 61, 138, 0.55);
+}
+#board td.last-to .piece-glyph {
+  color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+#board td.selected {
+  background: linear-gradient(180deg, #ffd0e2, #ffb3cc);
+  box-shadow: inset 0 0 0 3px var(--pink);
+}
+#board td.hint-from { box-shadow: inset 0 0 0 3px var(--amber); }
+#board td.hint-to {
+  background: linear-gradient(135deg, #ffb84d, #ffd97a);
+  box-shadow: inset 0 0 0 3px var(--amber);
+}
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+#board td.reject {
+  background: linear-gradient(135deg, var(--red), #ff8a99) !important;
+  animation: shakeError 0.32s ease-in-out;
+}
+
+#status-msg {
+  min-height: 22px;
+  font-size: 13px; color: var(--text-dim);
+  text-align: center;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+}
+#status-msg.success { color: var(--green); border-color: rgba(70, 209, 139, 0.3); background: rgba(70, 209, 139, 0.07); }
+#status-msg.error { color: var(--red); border-color: rgba(255, 85, 102, 0.3); background: rgba(255, 85, 102, 0.07); }
+
+.move-log {
+  width: 100%;
+  background: rgba(11, 15, 26, 0.55);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px;
+  max-height: 200px; overflow-y: auto;
+  font-size: 13px;
+}
+.move-log-empty { color: var(--text-muted); font-size: 12px; }
+.move-log ol { margin: 0; padding-left: 24px; list-style: decimal; }
+.move-log li { color: var(--text-dim); margin: 1px 0; }
+.move-log li .side {
+  display: inline-block; width: 18px; text-align: center;
+  font-weight: 700; margin-right: 4px;
+}
+.move-log li .side.sente { color: var(--cyan); }
+.move-log li .side.gote { color: var(--pink); }
+.move-log li.user-correct .side.gote { color: var(--green); }
+.move-log li .auto-tag {
+  display: inline-block;
+  font-size: 10px; color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px; padding: 0 6px;
+  margin-left: 6px;
+}
+
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(11, 15, 26, 0.86);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100;
+}
+#overlay.show { display: flex; }
+.overlay-card {
+  background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+  border: 1px solid var(--border-hi); border-radius: 16px;
+  padding: 32px 38px; text-align: center;
+  max-width: 380px;
+  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--pink) inset;
+}
+.overlay-card h2 {
+  margin: 0 0 12px; font-size: 28px; font-weight: 800;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.overlay-card p { color: var(--text-dim); font-size: 14px; margin: 0 0 18px; }
+.overlay-actions { display: flex; gap: 10px; justify-content: center; }
+.overlay-actions button {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; cursor: pointer;
+  font-family: inherit; transition: all 0.18s ease;
+}
+.overlay-actions button:hover {
+  border-color: var(--border-hi); background: rgba(255, 255, 255, 0.08);
+}
+.overlay-actions button.primary {
+  background: var(--gradient-hero); color: #0b0f1a;
+  border: 0; font-weight: 700;
+}
+
+#error-msg {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(255, 85, 102, 0.95);
+  color: white; padding: 10px 22px;
+  border-radius: 999px; font-size: 13px; font-weight: 600;
+  z-index: 50; pointer-events: none;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+#error-msg.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <h1>４五歩早仕掛け 勉強用教材</h1>
+  <a class="back-link" href="./100_４五歩早仕掛け_基本部分図.html">← 基本部分図に戻る</a>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>問題</h2>
+      <div class="problem-row">
+        <label for="problem-select">勉強用教材 (10 問)</label>
+        <select id="problem-select"></select>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>進捗</h2>
+      <div class="progress-card">
+        <span class="progress-label">指した手</span>
+        <span class="progress-value"><span id="ply-current">0</span> / <span id="ply-total">0</span></span>
+      </div>
+      <div id="turn-indicator" class="turn-indicator user" style="margin-top:10px">
+        <span class="dot"></span><span id="turn-text">あなた (後手) の番</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>操作</h2>
+      <div class="controls">
+        <button id="btn-hint" type="button">💡 ヒント</button>
+        <button id="btn-undo" type="button">↶ 1手戻る</button>
+        <button id="btn-reset" type="button">⟲ リセット</button>
+        <button id="btn-next" type="button">▶ 次の問題</button>
+      </div>
+    </section>
+
+    <section class="panel" id="head-comments-panel" style="display:none">
+      <h2>メモ</h2>
+      <div class="head-comments" id="head-comments"></div>
+    </section>
+  </aside>
+
+  <div class="board-area">
+    <div id="hand-board-stack" class="flipped">
+      <div class="hand-row" id="hand-gote" data-side="gote"></div>
+      <div id="board-container">
+        <div class="coord-row" id="file-coords"></div>
+        <div id="board-row">
+          <table id="board"><tbody></tbody></table>
+          <div class="coord-col" id="rank-coords"></div>
+        </div>
+      </div>
+      <div class="hand-row" id="hand-sente" data-side="sente"></div>
+    </div>
+
+    <div id="status-msg">問題を選んでください</div>
+
+    <div class="move-log" id="move-log">
+      <div class="move-log-empty">指し手はまだありません</div>
+    </div>
+  </div>
+</main>
+
+<div id="overlay">
+  <div class="overlay-card">
+    <h2>完了！</h2>
+    <p id="overlay-msg">全 22 手を指し終えました。</p>
+    <div class="overlay-actions">
+      <button type="button" id="overlay-retry">もう一度</button>
+      <button type="button" id="overlay-next" class="primary">次の問題 ▶</button>
+    </div>
+  </div>
+</div>
+
+<div id="error-msg"></div>
+
+<script src="./study_kifu.generated.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ========== 共通定数 ==========
+  const RANK_LETTERS = "abcdefghi";
+  const NUM_KAN = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  const SFEN_LETTER_TO_KANJI = { P: "歩", L: "香", N: "桂", S: "銀", G: "金", B: "角", R: "飛", K: "玉" };
+  const PROMOTED_LETTER_TO_KANJI = { P: "と", L: "杏", N: "圭", S: "全", B: "馬", R: "龍" };
+  const HAND_ORDER = ["R", "B", "G", "S", "N", "L", "P"];
+  const FLIPPED = true;  // ユーザー = 後手 = 盤下側
+
+  // ========== SFEN パース ==========
+  function parseSfen(sfen) {
+    const parts = sfen.split(" ");
+    const boardStr = parts[0], turn = parts[1], handStr = parts[2] || "-";
+    const grid = [];
+    for (const row of boardStr.split("/")) {
+      const r = []; let i = 0;
+      while (i < row.length) {
+        const ch = row[i];
+        if (/[1-9]/.test(ch)) { const n = parseInt(ch); for (let j = 0; j < n; j++) r.push(null); i++; }
+        else if (ch === "+") {
+          const next = row[i + 1];
+          r.push({ letter: next.toUpperCase(), color: next === next.toUpperCase() ? "sente" : "gote", promoted: true });
+          i += 2;
+        } else {
+          r.push({ letter: ch.toUpperCase(), color: ch === ch.toUpperCase() ? "sente" : "gote", promoted: false });
+          i++;
+        }
+      }
+      grid.push(r);
+    }
+    const senteHand = {}, goteHand = {};
+    if (handStr !== "-") {
+      let i = 0;
+      while (i < handStr.length) {
+        let num = "";
+        while (i < handStr.length && /\d/.test(handStr[i])) { num += handStr[i]; i++; }
+        const count = num ? parseInt(num) : 1;
+        const ch = handStr[i]; if (!ch) break;
+        const target = ch === ch.toUpperCase() ? senteHand : goteHand;
+        const key = ch.toUpperCase();
+        target[key] = (target[key] || 0) + count;
+        i++;
+      }
+    }
+    return { grid, turn, senteHand, goteHand };
+  }
+
+  function pieceKanji(cell) {
+    if (!cell) return "";
+    const map = cell.promoted ? PROMOTED_LETTER_TO_KANJI : SFEN_LETTER_TO_KANJI;
+    return map[cell.letter] || cell.letter;
+  }
+
+  // USI 解析
+  function parseUsi(usi) {
+    if (usi.length >= 4 && usi[1] === "*") {
+      return {
+        drop: usi[0],
+        from: null,
+        to: { file: parseInt(usi[2]), rank: RANK_LETTERS.indexOf(usi[3]) + 1 },
+        promote: false,
+      };
+    }
+    const promote = usi.endsWith("+");
+    const core = promote ? usi.slice(0, -1) : usi;
+    return {
+      drop: null,
+      from: { file: parseInt(core[0]), rank: RANK_LETTERS.indexOf(core[1]) + 1 },
+      to: { file: parseInt(core[2]), rank: RANK_LETTERS.indexOf(core[3]) + 1 },
+      promote,
+    };
+  }
+
+  function buildUsi(from, to, dropLetter) {
+    const toStr = `${to.file}${RANK_LETTERS[to.rank - 1]}`;
+    if (dropLetter) return `${dropLetter}*${toStr}`;
+    return `${from.file}${RANK_LETTERS[from.rank - 1]}${toStr}`;
+  }
+
+  // ========== 盤面レンダリング ==========
+  function cellIndexToFileRank(col, row) {
+    let c = col, r = row;
+    if (FLIPPED) { c = 8 - c; r = 8 - r; }
+    return { file: 9 - c, rank: r + 1 };
+  }
+
+  function renderBoard(sfen, lastMoveTo) {
+    const tbody = document.querySelector("#board tbody");
+    tbody.innerHTML = "";
+    const { grid, senteHand, goteHand } = parseSfen(sfen);
+    for (let displayRow = 0; displayRow < 9; displayRow++) {
+      const tr = document.createElement("tr");
+      for (let displayCol = 0; displayCol < 9; displayCol++) {
+        const td = document.createElement("td");
+        const { file, rank } = cellIndexToFileRank(displayCol, displayRow);
+        const cell = grid[rank - 1][9 - file];
+        if (cell) {
+          const span = document.createElement("span");
+          span.className = "piece-glyph";
+          span.textContent = pieceKanji(cell);
+          if ((cell.color === "gote" && !FLIPPED) || (cell.color === "sente" && FLIPPED)) {
+            span.style.transform = "rotate(180deg)";
+          }
+          td.appendChild(span);
+          if (cell.promoted) td.classList.add("promoted");
+        }
+        if (lastMoveTo && lastMoveTo.file === file && lastMoveTo.rank === rank) {
+          td.classList.add("last-to");
+        }
+        td.dataset.file = file;
+        td.dataset.rank = rank;
+        td.addEventListener("click", () => onBoardCellClick(file, rank));
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    renderCoordinates();
+    renderHand("hand-sente", senteHand, "sente");
+    renderHand("hand-gote", goteHand, "gote");
+    document.getElementById("hand-board-stack").classList.toggle("flipped", FLIPPED);
+  }
+
+  function renderCoordinates() {
+    const fileEl = document.getElementById("file-coords");
+    const rankEl = document.getElementById("rank-coords");
+    fileEl.innerHTML = ""; rankEl.innerHTML = "";
+    for (let displayCol = 0; displayCol < 9; displayCol++) {
+      const { file } = cellIndexToFileRank(displayCol, 0);
+      const span = document.createElement("span"); span.textContent = file; fileEl.appendChild(span);
+    }
+    for (let displayRow = 0; displayRow < 9; displayRow++) {
+      const { rank } = cellIndexToFileRank(0, displayRow);
+      const span = document.createElement("span"); span.textContent = NUM_KAN[rank]; rankEl.appendChild(span);
+    }
+  }
+
+  function renderHand(elId, hand, color) {
+    const el = document.getElementById(elId);
+    el.innerHTML = "";
+    const shouldRotate = (color === "gote" && !FLIPPED) || (color === "sente" && FLIPPED);
+    let any = false;
+    for (const k of HAND_ORDER) {
+      if (!hand[k]) continue;
+      any = true;
+      const span = document.createElement("span");
+      span.className = "hand-piece";
+      if (shouldRotate) span.classList.add("rotated");
+      // ユーザー (gote) の手駒だけクリック可能
+      if (color === "gote") {
+        span.classList.add("clickable");
+        span.dataset.handLetter = k;
+        span.addEventListener("click", () => onHandClick(k));
+      }
+      span.textContent = `${SFEN_LETTER_TO_KANJI[k] || k}${hand[k] > 1 ? hand[k] : ""}`;
+      el.appendChild(span);
+    }
+    if (!any) {
+      const ph = document.createElement("span");
+      ph.className = "hand-empty";
+      ph.textContent = `(${color === "sente" ? "先手" : "後手"} 持駒なし)`;
+      el.appendChild(ph);
+    }
+  }
+
+  // ========== 状態 ==========
+  let state = {
+    problemIndex: 0,
+    problem: null,
+    movePointer: 0,         // 次に指される手の index (0-based)
+    userMovesCount: 0,      // ユーザーが指した手の数
+    selected: null,         // {type: 'board' | 'hand', file?, rank?, handLetter?}
+    autoTimer: null,
+  };
+
+  function currentSfen() {
+    return state.problem.sfen_history[state.movePointer];
+  }
+
+  function nextExpectedUsi() {
+    if (state.movePointer >= state.problem.kifu_moves.length) return null;
+    return state.problem.kifu_moves[state.movePointer];
+  }
+
+  function isUserTurn() {
+    const sfen = currentSfen();
+    const turn = sfen.split(" ")[1];
+    return state.problem.user_side === "gote" ? turn === "w" : turn === "b";
+  }
+
+  // ========== UI 更新 ==========
+  function refreshBoard() {
+    const sfen = currentSfen();
+    let lastMoveTo = null;
+    if (state.movePointer > 0) {
+      const prevUsi = state.problem.kifu_moves[state.movePointer - 1];
+      lastMoveTo = parseUsi(prevUsi).to;
+    }
+    renderBoard(sfen, lastMoveTo);
+    applySelectionHighlight();
+  }
+
+  function applySelectionHighlight() {
+    if (!state.selected) return;
+    if (state.selected.type === "board") {
+      const td = document.querySelector(
+        `#board td[data-file="${state.selected.file}"][data-rank="${state.selected.rank}"]`
+      );
+      if (td) td.classList.add("selected");
+    } else {
+      const span = document.querySelector(
+        `#hand-gote .hand-piece[data-hand-letter="${state.selected.handLetter}"]`
+      );
+      if (span) span.classList.add("selected");
+    }
+  }
+
+  function refreshStatus() {
+    const total = state.problem.kifu_moves.length;
+    document.getElementById("ply-current").textContent = state.movePointer;
+    document.getElementById("ply-total").textContent = total;
+    const ti = document.getElementById("turn-indicator");
+    const tt = document.getElementById("turn-text");
+    if (state.movePointer >= total) {
+      ti.className = "turn-indicator user";
+      tt.textContent = "完了 🎉";
+    } else if (isUserTurn()) {
+      ti.className = "turn-indicator user";
+      tt.textContent = "あなた (後手) の番";
+    } else {
+      ti.className = "turn-indicator opp";
+      tt.textContent = "相手 (先手) が指します...";
+    }
+  }
+
+  function refreshMoveLog() {
+    const log = document.getElementById("move-log");
+    if (state.movePointer === 0) {
+      log.innerHTML = '<div class="move-log-empty">指し手はまだありません</div>';
+      return;
+    }
+    const ol = document.createElement("ol");
+    for (let i = 0; i < state.movePointer; i++) {
+      const meta = state.problem.move_meta[i];
+      const li = document.createElement("li");
+      const sideMark = meta.side === "sente" ? "▲" : "△";
+      const sideSpan = document.createElement("span");
+      sideSpan.className = "side " + meta.side;
+      sideSpan.textContent = sideMark;
+      li.appendChild(sideSpan);
+      const text = document.createTextNode(meta.notation);
+      li.appendChild(text);
+      const isUser = meta.side === state.problem.user_side;
+      if (isUser) {
+        li.classList.add("user-correct");
+      } else {
+        const tag = document.createElement("span");
+        tag.className = "auto-tag";
+        tag.textContent = "自動";
+        li.appendChild(tag);
+      }
+      ol.appendChild(li);
+    }
+    log.innerHTML = "";
+    log.appendChild(ol);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function refreshHeadComments() {
+    const panel = document.getElementById("head-comments-panel");
+    const body = document.getElementById("head-comments");
+    const comments = state.problem.head_comments || [];
+    if (comments.length === 0) {
+      panel.style.display = "none";
+      return;
+    }
+    panel.style.display = "";
+    body.textContent = comments.join("\n");
+  }
+
+  function setStatus(msg, kind) {
+    const el = document.getElementById("status-msg");
+    el.textContent = msg;
+    el.className = "";
+    if (kind) el.classList.add(kind);
+  }
+
+  function flashError(msg) {
+    const el = document.getElementById("error-msg");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(flashError._t);
+    flashError._t = setTimeout(() => el.classList.remove("show"), 1400);
+  }
+
+  // ========== サウンド ==========
+  let audioCtx = null;
+  function getAudio() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (e) { audioCtx = null; }
+    }
+    return audioCtx;
+  }
+  function playTone(freq, durationMs, type, gainVal) {
+    const ctx = getAudio(); if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = gainVal || 0.06;
+    osc.connect(gain).connect(ctx.destination);
+    const now = ctx.currentTime;
+    osc.start(now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + durationMs / 1000);
+    osc.stop(now + durationMs / 1000);
+  }
+  function playMoveSound() { playTone(560, 90, "triangle", 0.05); }
+  function playErrorSound() {
+    playTone(180, 160, "square", 0.08);
+    setTimeout(() => playTone(120, 200, "square", 0.07), 80);
+  }
+  function playFanfare() {
+    const seq = [[523, 120], [659, 120], [784, 120], [1047, 320]];
+    let t = 0;
+    for (const [f, d] of seq) {
+      setTimeout(() => playTone(f, d, "triangle", 0.07), t);
+      t += d * 0.8;
+    }
+  }
+
+  // ========== 操作 ==========
+  function selectProblem(idx) {
+    cancelAutoTimer();
+    state.problemIndex = idx;
+    state.problem = window.STUDY_DATA.problems[idx];
+    state.movePointer = 0;
+    state.userMovesCount = 0;
+    state.selected = null;
+    refreshBoard();
+    refreshStatus();
+    refreshMoveLog();
+    refreshHeadComments();
+    document.getElementById("problem-select").value = String(idx);
+    setStatus(`${state.problem.label} を読み込みました`, null);
+    hideOverlay();
+    // 最初に相手手番なら自動再生
+    maybeAutoPlay();
+  }
+
+  function onBoardCellClick(file, rank) {
+    if (state.movePointer >= state.problem.kifu_moves.length) return;
+    if (!isUserTurn()) return;
+    if (state.selected) {
+      const fromIsBoard = state.selected.type === "board";
+      // 同じマス再クリック → 選択解除
+      if (fromIsBoard && state.selected.file === file && state.selected.rank === rank) {
+        state.selected = null;
+        clearHighlights();
+        refreshBoard();
+        return;
+      }
+      // 自分の他の駒をクリック → 選択を切り替え
+      const sfen = currentSfen();
+      const { grid } = parseSfen(sfen);
+      const targetCell = grid[rank - 1][9 - file];
+      if (targetCell && targetCell.color === state.problem.user_side) {
+        state.selected = { type: "board", file, rank };
+        clearHighlights();
+        refreshBoard();
+        return;
+      }
+      // それ以外 → 移動を試みる
+      const dropLetter = state.selected.type === "hand" ? state.selected.handLetter : null;
+      const userUsiBase = buildUsi(
+        fromIsBoard ? { file: state.selected.file, rank: state.selected.rank } : null,
+        { file, rank },
+        dropLetter
+      );
+      attemptMove(userUsiBase);
+      return;
+    }
+    // 選択なし → このマスの駒を選択 (後手の駒のみ)
+    const sfen = currentSfen();
+    const { grid } = parseSfen(sfen);
+    const cell = grid[rank - 1][9 - file];
+    if (!cell || cell.color !== state.problem.user_side) return;
+    state.selected = { type: "board", file, rank };
+    clearHighlights();
+    refreshBoard();
+  }
+
+  function onHandClick(letter) {
+    if (state.movePointer >= state.problem.kifu_moves.length) return;
+    if (!isUserTurn()) return;
+    if (state.selected && state.selected.type === "hand" && state.selected.handLetter === letter) {
+      state.selected = null;
+      clearHighlights();
+      refreshBoard();
+      return;
+    }
+    state.selected = { type: "hand", handLetter: letter };
+    clearHighlights();
+    refreshBoard();
+  }
+
+  function attemptMove(userUsi) {
+    const expected = nextExpectedUsi();
+    if (!expected) return;
+    const match = expected === userUsi || expected === userUsi + "+";
+    if (!match) {
+      rejectMove(userUsi);
+      return;
+    }
+    applyMove(expected);
+    state.userMovesCount++;
+    state.selected = null;
+    playMoveSound();
+    refreshBoard();
+    refreshStatus();
+    refreshMoveLog();
+    setStatus("正解！", "success");
+    if (state.movePointer >= state.problem.kifu_moves.length) {
+      onCompletion();
+    } else {
+      maybeAutoPlay();
+    }
+  }
+
+  function applyMove(/* usi */) {
+    // SFEN は事前計算済み — pointer をインクリメントするだけで盤面が進む
+    state.movePointer++;
+  }
+
+  function rejectMove(userUsi) {
+    // 視覚フィードバック: 目的マスを赤く一瞬光らせる + シェイク
+    const parsed = parseUsi(userUsi);
+    const td = document.querySelector(
+      `#board td[data-file="${parsed.to.file}"][data-rank="${parsed.to.rank}"]`
+    );
+    if (td) {
+      td.classList.add("reject");
+      setTimeout(() => td.classList.remove("reject"), 360);
+    }
+    playErrorSound();
+    setStatus("棋譜と違います。別の手を試してください。", "error");
+    flashError("✗ 棋譜外の手");
+    state.selected = null;
+    clearHighlights();
+    // 選択だけ解除して盤面はそのまま
+  }
+
+  function maybeAutoPlay() {
+    if (state.movePointer >= state.problem.kifu_moves.length) return;
+    if (isUserTurn()) return;
+    cancelAutoTimer();
+    state.autoTimer = setTimeout(() => {
+      const usi = state.problem.kifu_moves[state.movePointer];
+      applyMove(usi);
+      playMoveSound();
+      refreshBoard();
+      refreshStatus();
+      refreshMoveLog();
+      setStatus("相手が指しました", null);
+      if (state.movePointer >= state.problem.kifu_moves.length) {
+        onCompletion();
+      } else if (isUserTurn()) {
+        setStatus("あなたの番です", null);
+      } else {
+        maybeAutoPlay();
+      }
+    }, 500);
+  }
+
+  function cancelAutoTimer() {
+    if (state.autoTimer) { clearTimeout(state.autoTimer); state.autoTimer = null; }
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll("#board td.selected, #board td.hint-from, #board td.hint-to")
+      .forEach(td => td.classList.remove("selected", "hint-from", "hint-to"));
+    document.querySelectorAll("#hand-gote .hand-piece.selected")
+      .forEach(span => span.classList.remove("selected"));
+  }
+
+  // ========== ボタン ==========
+  function onHint() {
+    if (state.movePointer >= state.problem.kifu_moves.length) return;
+    if (!isUserTurn()) {
+      setStatus("相手の番です", null);
+      return;
+    }
+    const expected = nextExpectedUsi();
+    if (!expected) return;
+    const p = parseUsi(expected);
+    refreshBoard();
+    if (p.drop) {
+      setStatus(`💡 ヒント: 持駒の ${SFEN_LETTER_TO_KANJI[p.drop]} を ${p.to.file}${NUM_KAN[p.to.rank]} へ打つ`, null);
+      const handSpan = document.querySelector(
+        `#hand-gote .hand-piece[data-hand-letter="${p.drop}"]`
+      );
+      if (handSpan) handSpan.classList.add("selected");
+      const tdTo = document.querySelector(
+        `#board td[data-file="${p.to.file}"][data-rank="${p.to.rank}"]`
+      );
+      if (tdTo) tdTo.classList.add("hint-to");
+    } else {
+      setStatus(`💡 ヒント: ${p.from.file}${NUM_KAN[p.from.rank]} → ${p.to.file}${NUM_KAN[p.to.rank]}${p.promote ? "（成り）" : ""}`, null);
+      const tdFrom = document.querySelector(
+        `#board td[data-file="${p.from.file}"][data-rank="${p.from.rank}"]`
+      );
+      if (tdFrom) tdFrom.classList.add("hint-from");
+      const tdTo = document.querySelector(
+        `#board td[data-file="${p.to.file}"][data-rank="${p.to.rank}"]`
+      );
+      if (tdTo) tdTo.classList.add("hint-to");
+    }
+  }
+
+  function onUndo() {
+    cancelAutoTimer();
+    if (state.movePointer <= 0) return;
+    // ユーザーが指した直後の状態に戻る = 1 ペア (自分+相手) 巻き戻し、ただし相手の手が最後なら 2 手戻す
+    // 簡単のため、ユーザーの直前の手まで巻き戻す
+    let target = state.movePointer - 1;
+    while (target > 0 && state.problem.move_meta[target].side !== state.problem.user_side) {
+      target--;
+    }
+    state.movePointer = target;
+    state.selected = null;
+    refreshBoard();
+    refreshStatus();
+    refreshMoveLog();
+    setStatus("1 手戻しました", null);
+  }
+
+  function onReset() {
+    cancelAutoTimer();
+    state.movePointer = 0;
+    state.userMovesCount = 0;
+    state.selected = null;
+    refreshBoard();
+    refreshStatus();
+    refreshMoveLog();
+    setStatus("最初に戻しました", null);
+    hideOverlay();
+    maybeAutoPlay();
+  }
+
+  function onNext() {
+    const total = window.STUDY_DATA.problems.length;
+    const nextIdx = (state.problemIndex + 1) % total;
+    selectProblem(nextIdx);
+  }
+
+  function onCompletion() {
+    playFanfare();
+    setStatus("🎉 完了！全手指し終えました", "success");
+    const total = state.problem.kifu_moves.length;
+    document.getElementById("overlay-msg").textContent =
+      `${state.problem.label} を全 ${total} 手指し終えました。`;
+    showOverlay();
+  }
+
+  function showOverlay() {
+    document.getElementById("overlay").classList.add("show");
+  }
+  function hideOverlay() {
+    document.getElementById("overlay").classList.remove("show");
+  }
+
+  // ========== 初期化 ==========
+  function populateProblemSelect() {
+    const sel = document.getElementById("problem-select");
+    sel.innerHTML = "";
+    window.STUDY_DATA.problems.forEach((p, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = `${p.label} (${p.kifu_moves.length} 手)`;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", e => selectProblem(parseInt(e.target.value)));
+  }
+
+  function init() {
+    if (!window.STUDY_DATA || !window.STUDY_DATA.problems || !window.STUDY_DATA.problems.length) {
+      setStatus("⚠ study_kifu.generated.js が読み込まれていません", "error");
+      return;
+    }
+    populateProblemSelect();
+    document.getElementById("btn-hint").addEventListener("click", onHint);
+    document.getElementById("btn-undo").addEventListener("click", onUndo);
+    document.getElementById("btn-reset").addEventListener("click", onReset);
+    document.getElementById("btn-next").addEventListener("click", onNext);
+    document.getElementById("overlay-retry").addEventListener("click", () => { hideOverlay(); onReset(); });
+    document.getElementById("overlay-next").addEventListener("click", () => { hideOverlay(); onNext(); });
+    selectProblem(0);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
