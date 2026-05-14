@@ -262,12 +262,23 @@ section.panel h2::before {
   }
   #hand-board-stack { padding: 10px; }
 
-  /* タッチ操作の当たり判定を確保 */
-  .controls button {
-    font-size: 14px;
-    padding: 12px 10px;
+  /* 操作パネルはサイドバー2カラムを跨いで全幅、ボタンは横1列の4等分 */
+  .sidebar > section.panel:has(> .controls) {
+    grid-column: 1 / -1;
   }
-  .controls button.primary { padding: 13px 14px; font-size: 15px; }
+  .controls {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .controls button {
+    font-size: 12px;
+    padding: 10px 4px;
+    white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .controls button.primary { padding: 11px 6px; font-size: 13px; }
   #problem-select { font-size: 16px; padding: 10px 12px; }
   .move-log { max-height: 160px; font-size: 14px; }
   #status-msg { font-size: 15px; padding: 8px 14px; }
