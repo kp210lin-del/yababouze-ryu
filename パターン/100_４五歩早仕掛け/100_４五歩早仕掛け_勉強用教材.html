@@ -80,61 +80,49 @@ body {
 }
 #topbar .back-link:hover { color: var(--text); border-color: var(--border-hi); background: rgba(255, 255, 255, 0.05); }
 
+/* 上部 sticky の操作ボタンバー (4 ボタンが topbar 直下に常駐) */
+#controls-bar {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border-bottom: 1px solid var(--border);
+}
+#controls-bar button {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  padding: 10px 6px;
+  font-size: 13px; font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.15s ease;
+}
+#controls-bar button:hover:not(:disabled) {
+  background: rgba(255, 61, 138, 0.15);
+  border-color: var(--pink);
+}
+#controls-bar button:active { transform: scale(0.97); }
+#controls-bar button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* main: 単一カラム。盤の下に補助 (問題選択/進捗/メモ/履歴) が続く */
 main {
   max-width: 1080px; margin: 0 auto;
-  padding: 24px 20px 80px;
-  display: grid; grid-template-columns: 280px 1fr; gap: 20px;
-}
-/* iPad 縦・タブレット縦：盤を上、操作ボタンを盤の直下、状態文を最下段に。
-   display: contents で sidebar / board-area の箱を消し、全項目を main の grid item に。
-   order で意図した縦並びを実現。 */
-@media (max-width: 1100px) {
-  main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 6px 8px 14px;
-    gap: 8px;
-    max-width: 100%;
-  }
-  .sidebar, .board-area { display: contents; }
-
-  /* 1. 盤 (full width) */
-  #hand-board-stack {
-    grid-column: 1 / -1;
-    order: 1;
-    justify-self: center;
-  }
-  /* 2. 操作ボタン (盤の直下) */
-  .sidebar > section.panel:has(> .controls) {
-    grid-column: 1 / -1;
-    order: 2;
-    padding: 6px 10px;
-  }
-  .sidebar > section.panel:has(> .controls) h2 { display: none; }
-  /* 3. 問題 / 4. 進捗 (1 行 2 列で並ぶ) */
-  .sidebar > section.panel:nth-of-type(1) { grid-column: 1; order: 3; padding: 8px 12px; }
-  .sidebar > section.panel:nth-of-type(2) { grid-column: 2; order: 4; padding: 8px 12px; }
-  .sidebar > section.panel h2 { font-size: 12px; margin-bottom: 4px; }
-  .progress-card { padding: 4px 10px; }
-  .progress-card .progress-value { font-size: 16px; }
-  .turn-indicator { padding: 4px 8px; font-size: 11px; margin-top: 6px !important; }
-  /* 5. メモ */
-  #head-comments-panel { grid-column: 1 / -1; order: 5; padding: 8px 12px; }
-  /* 6. 指し手ログ (小さく) */
-  .move-log {
-    grid-column: 1 / -1;
-    order: 6;
-    max-height: 60px;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  /* 7. 状態メッセージ (最下段) */
-  #status-msg {
-    grid-column: 1 / -1;
-    order: 7;
-    padding: 6px 12px;
-    font-size: 13px;
-  }
+  padding: 10px 10px 32px;
+  display: flex; flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
 }
 
 section.panel {
@@ -229,15 +217,16 @@ section.panel h2::before {
 }
 #hand-board-stack.flipped { flex-direction: column-reverse; }
 .hand-row {
-  min-height: 30px; padding: 4px 6px;
+  min-height: 38px; padding: 4px 6px;
   display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
 }
 .hand-piece {
   display: inline-block;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px; padding: 3px 9px;
-  font-size: 14px; font-weight: 700; color: var(--text);
+  border-radius: 8px; padding: 4px 12px;
+  font-size: clamp(14px, calc(var(--cell-size) * 0.34), 26px);
+  font-weight: 700; color: var(--text);
   cursor: default; user-select: none;
 }
 .hand-piece.rotated { transform: rotate(180deg); }
@@ -250,16 +239,25 @@ section.panel h2::before {
 .hand-empty { color: var(--text-muted); font-size: 11px; }
 
 #board-container { display: flex; flex-direction: column; gap: 4px; }
-.coord-row { display: flex; justify-content: space-around; padding: 0 2px; font-size: 11px; color: var(--text-muted); }
-.coord-col { display: flex; flex-direction: column; justify-content: space-around; padding: 2px 0; font-size: 11px; color: var(--text-muted); }
+.coord-row { display: flex; justify-content: space-around; padding: 0 2px; font-size: clamp(11px, calc(var(--cell-size) * 0.22), 16px); color: var(--text-muted); }
+.coord-col { display: flex; flex-direction: column; justify-content: space-around; padding: 2px 0; font-size: clamp(11px, calc(var(--cell-size) * 0.22), 16px); color: var(--text-muted); }
 #board-row { display: flex; align-items: stretch; gap: 4px; }
 #board {
   border-collapse: collapse;
   background: linear-gradient(180deg, #f0d8a0, #e6c98a);
   border: 1px solid #2b1f1a; border-radius: 4px; overflow: hidden;
 }
+/* 盤セルサイズはビューポート連動 (メディアクエリ非依存)。
+   幅予算 (100vw - 余白 - 座標欄) / 9 と、高さ予算 (100dvh - 上部UI余白) / 9.9 の小さい方。 */
+:root {
+  --cell-size: min(
+    calc((100vw - 40px) / 9),
+    calc((100dvh - 200px) / 9.9)
+  );
+}
 #board td {
-  width: 42px; height: 46px;
+  width: clamp(40px, var(--cell-size), 94px);
+  height: clamp(44px, calc(var(--cell-size) * 1.1), 104px);
   border: 1px solid rgba(43, 31, 26, 0.45);
   text-align: center; vertical-align: middle;
   position: relative; padding: 0;
@@ -269,53 +267,9 @@ section.panel h2::before {
 #board td.clickable { cursor: pointer; }
 #board td.clickable:hover { background: linear-gradient(180deg, #fae6b0, #f0d896); }
 .piece-glyph {
-  font-size: 26px; font-weight: 800; color: #1a1310;
+  font-size: clamp(24px, calc(var(--cell-size) * 0.62), 56px);
+  font-weight: 800; color: #1a1310;
   line-height: 1; display: inline-block;
-}
-
-/* iPad 縦想定：盤面サイズ = 幅予算と高さ予算の min。
-   - 幅予算 : (画面幅 - パディング・座標欄分) / 9
-   - 高さ予算: (画面高 dvh - topbar・操作・問題進捗・log・status・余白) / 9.9 */
-@media (max-width: 1100px) {
-  :root {
-    --cell-size: min(
-      calc((100vw - 60px) / 9),
-      calc((100dvh - 430px) / 9.9)
-    );
-  }
-  #board td {
-    width: clamp(40px, var(--cell-size), 82px);
-    height: clamp(44px, calc(var(--cell-size) * 1.1), 90px);
-  }
-  .piece-glyph {
-    font-size: clamp(24px, calc(var(--cell-size) * 0.62), 50px);
-  }
-  .hand-piece {
-    font-size: clamp(13px, calc(var(--cell-size) * 0.32), 24px);
-    padding: 3px 10px;
-    border-radius: 8px;
-  }
-  .hand-row { min-height: 34px; padding: 4px 6px; gap: 6px; }
-  .coord-row span, .coord-col span {
-    font-size: clamp(10px, calc(var(--cell-size) * 0.22), 16px);
-  }
-  #hand-board-stack { padding: 6px; }
-
-  /* 操作ボタン：横 4 等分の 1 行 */
-  .controls {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-  }
-  .controls button {
-    font-size: 12px;
-    padding: 9px 4px;
-    white-space: nowrap;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .controls button.primary { padding: 10px 6px; font-size: 13px; }
-  #problem-select { font-size: 16px; padding: 6px 10px; }
 }
 #board td.promoted .piece-glyph { color: #b54040; }
 #board td.last-to {
@@ -436,11 +390,36 @@ section.panel h2::before {
 
 <header id="topbar">
   <h1>４五歩早仕掛け 勉強用教材</h1>
-  <span class="ver-badge" title="ページのバージョン。push 毎に上がる">v4 · 2026-05-15</span>
+  <span class="ver-badge" title="ページのバージョン。push 毎に上がる">v5 · 2026-05-15</span>
   <a class="back-link" href="./100_４五歩早仕掛け_基本部分図.html">← 基本部分図に戻る</a>
 </header>
 
+<!-- 4 ボタンは盤の上に常駐 (sticky) -->
+<nav id="controls-bar" class="controls">
+  <button id="btn-hint" type="button">💡 ヒント</button>
+  <button id="btn-undo" type="button">↶ 1手戻る</button>
+  <button id="btn-reset" type="button">⟲ リセット</button>
+  <button id="btn-next" type="button">▶ 次の問題</button>
+</nav>
+
 <main>
+  <!-- 盤面 -->
+  <div class="board-area">
+    <div id="hand-board-stack" class="flipped">
+      <div class="hand-row" id="hand-gote" data-side="gote"></div>
+      <div id="board-container">
+        <div class="coord-row" id="file-coords"></div>
+        <div id="board-row">
+          <table id="board"><tbody></tbody></table>
+          <div class="coord-col" id="rank-coords"></div>
+        </div>
+      </div>
+      <div class="hand-row" id="hand-sente" data-side="sente"></div>
+    </div>
+    <div id="status-msg">問題を選んでください</div>
+  </div>
+
+  <!-- 補助 (問題選択・進捗・メモ・指し手ログ) — 盤の下、必要時のみスクロールでアクセス -->
   <aside class="sidebar">
     <section class="panel">
       <h2>問題</h2>
@@ -461,41 +440,15 @@ section.panel h2::before {
       </div>
     </section>
 
-    <section class="panel">
-      <h2>操作</h2>
-      <div class="controls">
-        <button id="btn-hint" type="button">💡 ヒント</button>
-        <button id="btn-undo" type="button">↶ 1手戻る</button>
-        <button id="btn-reset" type="button">⟲ リセット</button>
-        <button id="btn-next" type="button">▶ 次の問題</button>
-      </div>
-    </section>
-
     <section class="panel" id="head-comments-panel" style="display:none">
       <h2>メモ</h2>
       <div class="head-comments" id="head-comments"></div>
     </section>
-  </aside>
-
-  <div class="board-area">
-    <div id="hand-board-stack" class="flipped">
-      <div class="hand-row" id="hand-gote" data-side="gote"></div>
-      <div id="board-container">
-        <div class="coord-row" id="file-coords"></div>
-        <div id="board-row">
-          <table id="board"><tbody></tbody></table>
-          <div class="coord-col" id="rank-coords"></div>
-        </div>
-      </div>
-      <div class="hand-row" id="hand-sente" data-side="sente"></div>
-    </div>
-
-    <div id="status-msg">問題を選んでください</div>
 
     <div class="move-log" id="move-log">
       <div class="move-log-empty">指し手はまだありません</div>
     </div>
-  </div>
+  </aside>
 </main>
 
 <div id="overlay">
