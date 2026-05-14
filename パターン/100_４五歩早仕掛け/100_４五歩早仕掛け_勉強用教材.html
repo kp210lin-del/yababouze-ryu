@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>４五歩早仕掛け 勉強用教材 — やばボーズ流</title>
 <style>
 :root {
@@ -75,8 +76,25 @@ main {
   padding: 24px 20px 80px;
   display: grid; grid-template-columns: 280px 1fr; gap: 20px;
 }
-@media (max-width: 820px) {
-  main { grid-template-columns: 1fr; }
+/* iPad 縦・タブレット縦は単カラム + 盤を上に */
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+    padding: 12px 10px 40px;
+    gap: 12px;
+    max-width: 100%;
+  }
+  .board-area { order: -1; }
+  .sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .sidebar > section.panel { padding: 12px 14px; }
+  .sidebar > section.panel h2 { font-size: 14px; margin-bottom: 8px; }
+  /* メモパネルは全幅にする */
+  #head-comments-panel { grid-column: 1 / -1; }
 }
 
 section.panel {
@@ -213,6 +231,46 @@ section.panel h2::before {
 .piece-glyph {
   font-size: 26px; font-weight: 800; color: #1a1310;
   line-height: 1; display: inline-block;
+}
+
+/* iPad 縦想定：盤面を最大限大きく
+   セルサイズ = 幅予算と高さ予算の小さい方を採用。
+   - 幅予算 : (画面幅 - パディング・座標欄分) / 9
+   - 高さ予算: (画面高 - topbar・持駒2段・status・余白) / 9 */
+@media (max-width: 1100px) {
+  :root {
+    --cell-size: min(
+      calc((100vw - 60px) / 9),
+      calc((100vh - 330px) / 9.9)
+    );
+  }
+  #board td {
+    width: clamp(42px, var(--cell-size), 82px);
+    height: clamp(46px, calc(var(--cell-size) * 1.1), 90px);
+  }
+  .piece-glyph {
+    font-size: clamp(26px, calc(var(--cell-size) * 0.62), 50px);
+  }
+  .hand-piece {
+    font-size: clamp(14px, calc(var(--cell-size) * 0.34), 26px);
+    padding: 5px 12px;
+    border-radius: 8px;
+  }
+  .hand-row { min-height: 42px; padding: 6px 8px; gap: 8px; }
+  .coord-row span, .coord-col span {
+    font-size: clamp(11px, calc(var(--cell-size) * 0.22), 16px);
+  }
+  #hand-board-stack { padding: 10px; }
+
+  /* タッチ操作の当たり判定を確保 */
+  .controls button {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+  .controls button.primary { padding: 13px 14px; font-size: 15px; }
+  #problem-select { font-size: 16px; padding: 10px 12px; }
+  .move-log { max-height: 160px; font-size: 14px; }
+  #status-msg { font-size: 15px; padding: 8px 14px; }
 }
 #board td.promoted .piece-glyph { color: #b54040; }
 #board td.last-to {
