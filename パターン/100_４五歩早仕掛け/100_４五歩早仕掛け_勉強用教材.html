@@ -63,6 +63,15 @@ body {
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
+#topbar .ver-badge {
+  font-size: 11px; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 #topbar .back-link {
   margin-left: auto;
   color: var(--text-dim); text-decoration: none;
@@ -402,6 +411,7 @@ section.panel h2::before {
 
 <header id="topbar">
   <h1>４五歩早仕掛け 勉強用教材</h1>
+  <span class="ver-badge" title="ページのバージョン。push 毎に上がる">v3 · 2026-05-15</span>
   <a class="back-link" href="./100_４五歩早仕掛け_基本部分図.html">← 基本部分図に戻る</a>
 </header>
 
