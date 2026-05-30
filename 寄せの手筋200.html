@@ -47,22 +47,22 @@ header .counter{ font-size:15px; font-weight:700; color:var(--ink-dim); font-var
 
 /* ---- hand strips (固定高・横スクロール) ---- */
 .hand{
-  display:flex; align-items:center; gap:8px;
-  height:38px; min-height:38px;
-  margin:0 14px; padding:0 4px;
+  display:flex; align-items:center; gap:10px;
+  height:56px; min-height:56px;
+  margin:0 12px; padding:0 4px;
   overflow-x:auto; overflow-y:hidden; white-space:nowrap;
   scrollbar-width:none;
 }
 .hand::-webkit-scrollbar{ display:none; }
-.hand .lbl{ flex:0 0 auto; font-size:13px; font-weight:700; color:var(--ink-dim); }
-.hand .pieces{ display:flex; gap:6px; align-items:center; }
+.hand .lbl{ flex:0 0 auto; font-size:15px; font-weight:800; color:var(--ink-dim); }
+.hand .pieces{ display:flex; gap:8px; align-items:center; }
 .hp{
-  flex:0 0 auto; display:inline-flex; align-items:center; gap:1px;
-  font-size:19px; font-weight:800; line-height:1;
-  padding:3px 7px; border-radius:8px;
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:2px;
+  font-size:27px; font-weight:800; line-height:1;
+  padding:7px 12px; min-height:46px; border-radius:10px;
   background:var(--paper); border:1px solid var(--line); color:var(--ink);
 }
-.hp .cnt{ font-size:12px; font-weight:700; color:var(--ink-dim); }
+.hp .cnt{ font-size:16px; font-weight:800; color:var(--ink-dim); }
 .hp.selectable{ cursor:pointer; }
 .hp.sel{ background:var(--hl); border-color:var(--accent); box-shadow:0 0 0 2px var(--accent) inset; }
 .hand .empty{ font-size:12px; color:var(--ink-dim); }
